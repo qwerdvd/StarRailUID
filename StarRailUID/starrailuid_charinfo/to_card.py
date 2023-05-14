@@ -4,11 +4,12 @@ from typing import List, Union, Optional
 
 from PIL import Image, ImageDraw
 from gsuid_core.utils.api.enka.models import EnkaData
-from ..utils.map.name_covert import name_to_avatar_id, avatar_id_to_char_star
+
 from .to_data import api_to_dict
-from ..utils.resource.RESOURCE_PATH import CHAR_ICON_PATH
 from ..utils.image.convert import convert_img
+from ..utils.resource.RESOURCE_PATH import CHAR_ICON_PATH
 from ..utils.fonts.starrail_fonts import sr_font_18, sr_font_58
+from ..utils.map.name_covert import name_to_avatar_id, avatar_id_to_char_star
 
 half_color = (255, 255, 255, 120)
 first_color = (29, 29, 29)
@@ -22,7 +23,6 @@ tag = Image.open(TEXT_PATH / 'tag.png')
 footbar = Image.open(TEXT_PATH / 'footbar.png')
 pic_500 = Image.open(TEXT_PATH / '500.png')
 pic_204 = Image.open(TEXT_PATH / '204.png')
-
 
 
 async def api_to_card(
@@ -40,14 +40,12 @@ async def api_to_card(
         if char_data_list == []:
             return await convert_img(pic_500)
 
-    img = await draw_enka_card(uid=uid, char_list=char_data_list, showfrom = 1)
+    img = await draw_enka_card(uid=uid, char_list=char_data_list, showfrom=1)
     return img
 
 
 async def draw_enka_card(
-    uid: str,
-    char_list: Optional[List] = None,
-    showfrom : int = 0
+    uid: str, char_list: Optional[List] = None, showfrom: int = 0
 ):
     char_data_list = []
     for char in char_list:
