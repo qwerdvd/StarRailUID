@@ -9,6 +9,7 @@ from PIL import Image, ImageDraw
 from gsuid_core.logger import logger
 from gsuid_core.utils.image.convert import convert_img
 from gsuid_core.utils.image.image_tools import draw_text_by_line
+
 from .to_data import api_to_dict
 from .mono.Character import Character
 from ..utils.error_reply import CHAR_HINT
@@ -597,7 +598,7 @@ async def get_char_data(
             elif enable_self and char_self_path.exists():
                 path = char_self_path
         else:
-            return CHAR_HINT.format(char_name,char_name)
+            return CHAR_HINT.format(char_name, char_name)
 
     with open(path, 'r', encoding='utf8') as fp:
         char_data = json.load(fp)
