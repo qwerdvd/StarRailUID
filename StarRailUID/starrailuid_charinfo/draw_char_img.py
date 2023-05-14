@@ -581,7 +581,7 @@ async def get_char_data(
     player_path = PLAYER_PATH / str(sr_uid)
     SELF_PATH = player_path / 'SELF'
     char_name = await alias_to_char_name(char_name)
-    if char_name == False:
+    if char_name is False:
         return "请输入正确的角色名"
     char_path = player_path / f'{char_name}.json'
     char_self_path = SELF_PATH / f'{char_name}.json'
