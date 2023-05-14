@@ -18,6 +18,7 @@ skillId2Type_fileName = f'skillId2Type_mapping_{version}.json'
 Property2Name_fileName = 'Property2Name.json'
 RelicId2SetId_fileName = f'RelicId2SetId_mapping_{version}.json'
 SetId2Name_fileName = f'SetId2Name_mapping_{version}.json'
+avatarId2Star_fileName = f'avatarId2Star_mapping_{version}.json'
 rankId2Name_fileName = f'rankId2Name_mapping_{version}.json'
 characterSkillTree_fileName = f'characterSkillTree_mapping_{version}.json'
 avatarId2DamageType_fileName = f'avatarId2DamageType_mapping_{version}.json'
@@ -100,6 +101,9 @@ with open(MAP / EquipmentID2Rarity_fileName, 'r', encoding='UTF-8') as f:
 
 with open(MAP / RelicId2Rarity_fileName, 'r', encoding='UTF-8') as f:
     RelicId2Rarity = msgjson.decode(f.read(), type=Dict[str, int])
+
+with open(MAP / avatarId2Star_fileName, 'r', encoding='utf8') as f:
+    avatarId2Star_data = msgjson.decode(f.read(), type=Dict[str, str])
 
 with open(MAP / ItemId2Name_fileName, 'r', encoding='UTF-8') as f:
     ItemId2Name = msgjson.decode(f.read(), type=Dict[str, str])

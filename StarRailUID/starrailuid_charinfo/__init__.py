@@ -69,3 +69,4 @@ async def send_card_info(bot: Bot, ev: Event):
     im = await api_to_card(uid)
     await bot.logger.info(f'UID{uid}获取角色数据成功！')
     await bot.send(im)
+

@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw
 from gsuid_core.logger import logger
 from gsuid_core.utils.image.convert import convert_img
 from gsuid_core.utils.image.image_tools import draw_text_by_line
-
+from .to_data import api_to_dict
 from .mono.Character import Character
 from ..utils.error_reply import CHAR_HINT
 from ..utils.map.SR_MAP_PATH import RelicId2Rarity
@@ -580,6 +580,8 @@ async def get_char_data(
     player_path = PLAYER_PATH / str(sr_uid)
     SELF_PATH = player_path / 'SELF'
     char_name = await alias_to_char_name(char_name)
+    if char_name == False:
+        return "请输入正确的角色名"
     char_path = player_path / f'{char_name}.json'
     char_self_path = SELF_PATH / f'{char_name}.json'
     if char_path.exists():
@@ -587,7 +589,15 @@ async def get_char_data(
     elif enable_self and char_self_path.exists():
         path = char_self_path
     else:
-        return CHAR_HINT.format(char_name)
+        im = await api_to_dict(sr_uid)
+        print(str(im))
+        if str(char_name) in im:
+            if char_path.exists():
+                path = char_path
+            elif enable_self and char_self_path.exists():
+                path = char_self_path
+        else:
+            return CHAR_HINT.format(char_name,char_name)
 
     with open(path, 'r', encoding='utf8') as fp:
         char_data = json.load(fp)

@@ -111,7 +111,7 @@ class Character:
             set_property = ''
             set_id = item[0]
             count = item[1]
-            if count >= 2:
+            if count >= 2 and RelicSetSkill[str(set_id)]['2'] != {}:
                 set_property = RelicSetSkill[str(set_id)]['2']['Property']
                 set_value = mp.mpf(RelicSetSkill[str(set_id)]['2']['Value'])
             if count == 4 and RelicSetSkill[str(set_id)]['4'] != {}:
