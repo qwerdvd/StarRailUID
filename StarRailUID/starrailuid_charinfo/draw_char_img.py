@@ -16,7 +16,7 @@ from ..utils.map.SR_MAP_PATH import RelicId2Rarity
 from ..utils.excel.read_excel import light_cone_ranks
 from ..utils.fonts.first_world import fw_font_28, fw_font_120
 
-# from ..utils.map.name_covert import name_to_avatar_id, alias_to_char_name
+from ..utils.map.name_covert import name_to_avatar_id, alias_to_char_name
 from ..utils.resource.RESOURCE_PATH import (
     RELIC_PATH,
     SKILL_PATH,
@@ -580,11 +580,7 @@ async def get_char_data(
 ) -> Union[Dict, str]:
     player_path = PLAYER_PATH / str(sr_uid)
     SELF_PATH = player_path / 'SELF'
-    # char_id = await name_to_avatar_id(char_name)
-    if '开拓者' in char_name:
-        char_name = '开拓者'
-    # else:
-    #     char_name = await alias_to_char_name(char_id, char_name)
+    char_name = await alias_to_char_name(char_name)
 
     char_path = player_path / f'{char_name}.json'
     char_self_path = SELF_PATH / f'{char_name}.json'
