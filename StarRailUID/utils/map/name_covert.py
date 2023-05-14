@@ -31,6 +31,7 @@ async def alias_to_char_name(char_name: str) -> str:
     return False
 
 
+
 async def weapon_id_to_name(weapon_id: str) -> str:
     weapon_name = EquipmentID2Name[weapon_id]
     return weapon_name

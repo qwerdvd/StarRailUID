@@ -582,15 +582,8 @@ async def get_char_data(
     char_name = await alias_to_char_name(char_name)
     if char_name == False:
         return "请输入正确的角色名"
-    char_path = player_path / f'{char_name}.json'
-    char_self_path = SELF_PATH / f'{char_name}.json'
-    if char_path.exists():
-        path = char_path
-    elif enable_self and char_self_path.exists():
-        path = char_self_path
-    else:
         im = await api_to_dict(sr_uid)
-        print(str(im))
+        # print(str(im))
         if str(char_name) in im:
             if char_path.exists():
                 path = char_path
