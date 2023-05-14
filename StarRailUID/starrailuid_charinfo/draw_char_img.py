@@ -15,7 +15,6 @@ from .mono.Character import Character
 from ..utils.map.SR_MAP_PATH import RelicId2Rarity
 from ..utils.excel.read_excel import light_cone_ranks
 from ..utils.fonts.first_world import fw_font_28, fw_font_120
-
 from ..utils.map.name_covert import name_to_avatar_id, alias_to_char_name
 from ..utils.resource.RESOURCE_PATH import (
     RELIC_PATH,
