@@ -20,10 +20,11 @@ async def name_to_avatar_id(name: str) -> str:
     return avatar_id
 
 
-async def alias_to_char_name(char_id: str, char_name: str) -> str:
-    for i in alias_data['characters'][char_id]:
-        if (char_name in i) or (char_name in alias_data[i]):
-            return i
+async def alias_to_char_name(char_name: str) -> str:
+    for i in alias_data['characters']:
+        #print(alias_data['characters'][i])
+        if char_name in alias_data['characters'][i]:
+            return alias_data['characters'][i][0]
     return char_name
 
 
