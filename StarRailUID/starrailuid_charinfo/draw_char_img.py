@@ -590,7 +590,11 @@ async def get_char_data(
 ) -> Union[Dict, str]:
     player_path = PLAYER_PATH / str(sr_uid)
     SELF_PATH = player_path / 'SELF'
-    char_name = await alias_to_char_name(char_name)
+    if "开拓者" in str(char_name):
+        char_name = "开拓者"
+    char_id = await name_to_avatar_id(char_name)
+    if char_id == '':
+        char_name = await alias_to_char_name(char_name)
     if char_name is False:
         return "请输入正确的角色名"
     char_path = player_path / f'{char_name}.json'
