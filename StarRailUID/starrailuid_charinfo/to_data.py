@@ -76,28 +76,31 @@ async def api_to_dict(
     if 'PlayerDetailInfo' not in sr_data:
         return f'SR_UID{sr_uid}刷新失败！未打开角色展柜!'
 
-    char_dict_list = []
+    char_name_list = []
+    char_id_list = []
     im = f'UID: {sr_uid} 的角色展柜刷新成功\n'
     if PlayerDetailInfo.get('AssistAvatar'):
-        char_dict, avatarName = await get_data(
-            PlayerDetailInfo['AssistAvatar'], sr_data, sr_uid
-        )
-        im += f'支援角色 {avatarName}\n'
-        if avatarName not in char_dict_list:
-            char_dict_list.append(avatarName)
+        if PlayerDetailInfo['AssistAvatar']['AvatarID'] not in char_id_list:
+            char_dict, avatarName = await get_data(
+                PlayerDetailInfo['AssistAvatar'], sr_data, sr_uid
+            )
+            im += f'支援角色 {avatarName}\n'
+            char_name_list.append(avatarName)
+            char_id_list.append(PlayerDetailInfo['AssistAvatar']['AvatarID'])
     if PlayerDetailInfo.get('DisplayAvatarList'):
         im += '星海同行'
         for char in PlayerDetailInfo['DisplayAvatarList']:
-            char_dict, avatarName = await get_data(char, sr_data, sr_uid)
-            im += f' {avatarName}'
-            if avatarName not in char_dict_list:
-                char_dict_list.append(avatarName)
+            if char['AvatarID'] not in char_id_list:
+                char_dict, avatarName = await get_data(char, sr_data, sr_uid)
+                im += f' {avatarName}'
+                char_name_list.append(avatarName)
+                char_id_list.append(char['AvatarID'])
 
-    if not char_dict_list:
+    if not char_name_list:
         im = f'UID: {sr_uid} 的角色展柜刷新失败！\n请检查UID是否正确或者角色展柜是否打开！'
         return im
 
-    return char_dict_list
+    return char_name_list
 
 
 async def get_data(char: dict, sr_data: dict, sr_uid: str):
