@@ -13,10 +13,10 @@ from gsuid_core.utils.image.image_tools import draw_text_by_line
 from .to_data import api_to_dict
 from .mono.Character import Character
 from ..utils.error_reply import CHAR_HINT
+from ..utils.fonts.first_world import fw_font_28
 from ..utils.map.SR_MAP_PATH import RelicId2Rarity
 from ..utils.excel.read_excel import light_cone_ranks
-from ..utils.map.name_covert import alias_to_char_name
-from ..utils.fonts.first_world import fw_font_28, fw_font_120
+from ..utils.map.name_covert import name_to_avatar_id, alias_to_char_name
 from ..utils.resource.RESOURCE_PATH import (
     RELIC_PATH,
     SKILL_PATH,
@@ -127,7 +127,7 @@ async def draw_char_info_img(raw_mes: str, sr_uid: str, url: Optional[str]):
         (995, 715),
         f'uid {sr_uid}',
         white_color,
-        fw_font_28,
+        sr_font_28,
         'rm',
         stroke_width=1,
     )
@@ -411,6 +411,7 @@ async def draw_char_info_img(raw_mes: str, sr_uid: str, url: Optional[str]):
         for i in range(0, len(desc_params)):
             temp = math.floor(desc_params[i] * 1000) / 10
             desc = desc.replace(f'#{i + 1}[i]%', f'{str(temp)}%')
+            desc = desc.replace(f'#{i + 1}[f1]%', f'{str(temp)}%')
         for i in range(0, len(desc_params)):
             desc = desc.replace(f'#{i + 1}[i]', str(desc_params[i]))
         draw_text_by_line(
@@ -422,7 +423,7 @@ async def draw_char_info_img(raw_mes: str, sr_uid: str, url: Optional[str]):
             (525, 1005),
             'No light cone!',
             white_color,
-            fw_font_120,
+            fw_font_28,
             'mm',
         )
 
@@ -557,9 +558,18 @@ async def draw_char_info_img(raw_mes: str, sr_uid: str, url: Optional[str]):
             (525, 1565),
             'No relic!',
             white_color,
-            fw_font_120,
+            fw_font_28,
             'mm',
         )
+
+    # 写底层文字
+    char_img_draw.text(
+        (525, 2022),
+        '--Created by qwerdvd-Designed By Wuyi-Thank for mihomo.me--',
+        (255, 255, 255),
+        fw_font_28,
+        'mm',
+    )
 
     # 发送图片
     res = await convert_img(char_info)
@@ -580,7 +590,11 @@ async def get_char_data(
 ) -> Union[Dict, str]:
     player_path = PLAYER_PATH / str(sr_uid)
     SELF_PATH = player_path / 'SELF'
-    char_name = await alias_to_char_name(char_name)
+    if "开拓者" in str(char_name):
+        char_name = "开拓者"
+    char_id = await name_to_avatar_id(char_name)
+    if char_id == '':
+        char_name = await alias_to_char_name(char_name)
     if char_name is False:
         return "请输入正确的角色名"
     char_path = player_path / f'{char_name}.json'
