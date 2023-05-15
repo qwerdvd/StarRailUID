@@ -7,7 +7,7 @@ from gsuid_core.utils.api.enka.models import EnkaData
 
 from ..utils.error_reply import UID_HINT
 from ..utils.resource.RESOURCE_PATH import PLAYER_PATH
-from ..sruid_utils.api.lulu.requests import get_char_card_info
+from ..sruid_utils.api.mihomo.requests import get_char_card_info
 
 # from gsuid_core.utils.api.minigg.request import get_weapon_info
 from .cal_value import cal_relic_sub_affix, cal_relic_main_affix
@@ -38,10 +38,10 @@ async def api_to_dict(
 ) -> Union[List[dict], str]:
     """
     :说明:
-      访问luluAPI并转换为StarRailUID的数据Json。
+      访问Mihomo.me API并转换为StarRailUID的数据Json。
     :参数:
       * ``uid: str``: 玩家uid。
-      * ``sr_data: Optional[dict] = None``: 来自lulu的dict, 可留空。
+      * ``sr_data: Optional[dict] = None``: 来自Mihomo.me的dict, 可留空。
     :返回:
       * ``刷新完成提示语: str``: 包含刷新成功的角色列表。
     """
@@ -58,7 +58,7 @@ async def api_to_dict(
         return []
     if isinstance(sr_data, dict):
         if 'PlayerDetailInfo' not in sr_data:
-            im = '服务器正在维护或者关闭中...\n检查lulu api是否可以访问\n如可以访问,尝试上报Bug!'
+            im = '服务器正在维护或者关闭中...\n检查Mihomo.me是否可以访问\n如可以访问,尝试上报Bug!'
             return im
     elif sr_data is None:
         return []
