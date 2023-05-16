@@ -240,9 +240,7 @@ async def draw_note_img(sr_uid: str) -> Union[bytes, str]:
     if last_monthly_data:
         pie_image = Image.new("RGBA", (2100, 2100), color=(255, 255, 255, 0))
         pie_image_draw = ImageDraw.Draw(pie_image)
-        for index, i in enumerate(
-            last_monthly_data['month_data']['group_by']
-        ):
+        for index, i in enumerate(last_monthly_data['month_data']['group_by']):
             pie_image_draw.pieslice(
                 xy,
                 temp,
