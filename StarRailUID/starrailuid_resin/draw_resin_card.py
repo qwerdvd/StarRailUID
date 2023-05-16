@@ -6,7 +6,7 @@ from pathlib import Path
 import aiohttp
 from PIL import Image, ImageDraw
 from gsuid_core.logger import logger
-
+from ..utils.image.image_tools import get_simple_bg
 from ..utils.api import get_sqla
 from ..utils.mys_api import mys_api
 from ..utils.image.convert import convert_img
@@ -144,29 +144,30 @@ async def seconds2hours_zhcn(seconds: int) -> str:
 async def draw_resin_img(sr_uid: str) -> Image.Image:
     # 获取数据
     daily_data = await mys_api.get_daily_data(sr_uid)
-
-    img = note_bg.copy()
-
+    
+    img = await get_simple_bg(based_w, based_h)
+    img.paste(white_overlay, (0, 0), white_overlay)
+    
     if isinstance(daily_data, int):
         img_draw = ImageDraw.Draw(img)
         img.paste(warn_pic, (0, 0), warn_pic)
         # 写UID
         img_draw.text(
-            (250, 553),
+            (350, 680),
             f'UID{sr_uid}',
             font=sr_font_26,
             fill=first_color,
             anchor='mm',
         )
         img_draw.text(
-            (250, 518),
+            (350, 650),
             f'错误码 {daily_data}',
             font=sr_font_26,
             fill=red_color,
             anchor='mm',
         )
         return img
-
+    
     # nickname and level
     role_basic_info = await mys_api.get_role_basic_info(sr_uid)
     nickname = role_basic_info['nickname']
@@ -181,11 +182,9 @@ async def draw_resin_img(sr_uid: str) -> Image.Image:
         stamina_color = red_color
     else:
         stamina_color = second_color
-    stamina_recovery_time = await seconds2hours_zhcn(
-        daily_data['stamina_recover_time']
-    )
+    stamina_recovery_time = await seconds2hours_zhcn(daily_data['stamina_recover_time'])
 
-    img_draw = ImageDraw.Draw(img)
+    img.paste(note_bg, (0, 0), note_bg)
 
     # 派遣
     task_task = []
