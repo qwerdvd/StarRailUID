@@ -24,6 +24,7 @@ TEXT_PATH = Path(__file__).parent / 'texture2D'
 
 note_bg = Image.open(TEXT_PATH / 'note_bg.png')
 note_travel_bg = Image.open(TEXT_PATH / 'note_travel_bg.png')
+warn_pic = Image.open(TEXT_PATH / 'warn.png')
 
 based_w = 700
 based_h = 1200
@@ -152,7 +153,7 @@ async def draw_resin_img(sr_uid: str) -> Image.Image:
         img.paste(warn_pic, (0, 0), warn_pic)
         # 写UID
         img_draw.text(
-            (350, 663),
+            (250, 553),
             f'UID{sr_uid}',
             font=sr_font_26,
             fill=first_color,
@@ -160,8 +161,8 @@ async def draw_resin_img(sr_uid: str) -> Image.Image:
         )
         img_draw.text(
             (250, 518),
-            get_error(daily_data),
-            font=gs_font_26,
+            f'错误码 {daily_data}',
+            font=sr_font_26,
             fill=red_color,
             anchor='mm',
         )
