@@ -85,7 +85,7 @@ async def draw_char_info_img(raw_mes: str, sr_uid: str, url: Optional[str]):
     char_info = bg_img.copy()
     char_img = Image.open(CHAR_PORTRAIT_PATH / f'{char.char_id}.png').resize(
         (1050, 1050)
-    )
+    ).convert('RGBA')
     char_info.paste(char_img, (-220, -130), char_img)
 
     # 放属性图标
