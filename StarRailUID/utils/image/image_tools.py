@@ -79,6 +79,7 @@ async def get_qq_avatar(
     char_pic = Image.open(BytesIO(get(avatar_url).content)).convert('RGBA')
     return char_pic
 
+
 async def get_color_bg(
     based_w: int,
     based_h: int,
@@ -104,6 +105,7 @@ async def get_color_bg(
         img.paste(color_mask, (0, 0), enka_mask)
     return img
 
+
 async def get_simple_bg(
     based_w: int, based_h: int, image: Union[str, None, Image.Image] = None
 ) -> Image.Image:
@@ -119,6 +121,7 @@ async def get_simple_bg(
     # 确定图片的长宽
     bg_img = crop_center_img(edit_bg, based_w, based_h)
     return bg_img
+
 
 def crop_center_img(
     img: Image.Image, based_w: int, based_h: int
