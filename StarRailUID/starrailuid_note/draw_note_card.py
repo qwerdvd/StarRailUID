@@ -83,6 +83,7 @@ async def draw_note_img(sr_uid: str) -> Union[bytes, str]:
     if last_monthly_path.exists():
         with open(last_monthly_path, 'r', encoding='utf-8') as f:
             last_monthly_data = json.load(f)
+            last_monthly_data = last_monthly_data['data']
     else:
         add_month = ''
         if int(last_month) < 10:
