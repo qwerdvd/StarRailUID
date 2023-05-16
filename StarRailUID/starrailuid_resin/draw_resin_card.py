@@ -1,55 +1,42 @@
+import json
 import asyncio
-from io import BytesIO
 from typing import List
 from pathlib import Path
 
-import aiohttp
 from PIL import Image, ImageDraw
 from gsuid_core.logger import logger
+from gsuid_core.utils.api.mys.models import Expedition
 
-from ..utils.api import get_sqla
 from ..utils.mys_api import mys_api
+from ..utils.database import get_sqla
 from ..utils.image.convert import convert_img
-from ..sruid_utils.api.mys.models import Expedition
+from ..genshinuid_enka.to_data import get_enka_info
 from ..utils.image.image_tools import get_simple_bg
-from ..utils.fonts.starrail_fonts import (
-    sr_font_22,
-    sr_font_24,
-    sr_font_26,
-    sr_font_36,
-    sr_font_50,
+from ..utils.map.name_covert import enName_to_avatarId
+from ..utils.resource.RESOURCE_PATH import PLAYER_PATH, CHAR_SIDE_PATH
+from ..utils.fonts.genshin_fonts import (
+    gs_font_20,
+    gs_font_26,
+    gs_font_32,
+    gs_font_60,
 )
 
 TEXT_PATH = Path(__file__).parent / 'texture2D'
 
-note_bg = Image.open(TEXT_PATH / 'note_bg.png')
-note_travel_bg = Image.open(TEXT_PATH / 'note_travel_bg.png')
+resin_fg_pic = Image.open(TEXT_PATH / 'resin_fg.png')
+yes_pic = Image.open(TEXT_PATH / 'yes.png')
+no_pic = Image.open(TEXT_PATH / 'no.png')
 warn_pic = Image.open(TEXT_PATH / 'warn.png')
 
-based_w = 700
-based_h = 1200
+based_w = 500
+based_h = 900
 white_overlay = Image.new('RGBA', (based_w, based_h), (255, 251, 242, 225))
 
 first_color = (29, 29, 29)
 second_color = (98, 98, 98)
-white_color = (255, 255, 255)
 green_color = (15, 196, 35)
 orange_color = (237, 115, 61)
 red_color = (235, 61, 75)
-
-
-def seconds2hours(seconds: int) -> str:
-    m, s = divmod(int(seconds), 60)
-    h, m = divmod(m, 60)
-    return '%02d:%02d:%02d' % (h, m, s)
-
-
-async def download_image(url: str) -> Image.Image:
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            img_data = await response.read()
-            img = Image.open(BytesIO(img_data))
-            return img
 
 
 async def _draw_task_img(
@@ -58,52 +45,33 @@ async def _draw_task_img(
     index: int,
     char: Expedition,
 ):
-    if char is not None:
-        expedition_name = char['name']
-        remaining_time: str = seconds2hours(char['remaining_time'])
-        note_travel_img = note_travel_bg.copy()
-        for i in range(2):
-            avatar_url = char['avatars'][i]
-            image = await download_image(avatar_url)
-            char_pic = image.convert('RGBA').resize(
-                (40, 40), Image.Resampling.LANCZOS  # type: ignore
-            )
-            note_travel_img.paste(char_pic, (495 + 68 * i, 20), char_pic)
-        img.paste(note_travel_img, (0, 790 + index * 80), note_travel_img)
-        if char['status'] == 'Finished':
-            status_mark = '待收取'
-        else:
-            status_mark = str(remaining_time)
-        img_draw.text(
-            (120, 830 + index * 80),
-            expedition_name,
-            font=sr_font_22,
-            fill=white_color,
-            anchor='lm',
-        )
-        img_draw.text(
-            (380, 830 + index * 80),
-            status_mark,
-            font=sr_font_22,
-            fill=white_color,
-            anchor='mm',
-        )
+    char_en_name = char['avatar_side_icon'].split('_')[-1].split('.')[0]
+    avatar_id = await enName_to_avatarId(char_en_name)
+    char_pic = (
+        Image.open(CHAR_SIDE_PATH / f'{avatar_id}.png')
+        .convert('RGBA')
+        .resize((80, 80), Image.Resampling.LANCZOS)  # type: ignore
+    )
+    img.paste(char_pic, (22 + index * 90, 770), char_pic)
+    if char['status'] == 'Finished':
+        status_mark = '待收取'
+        status_color = red_color
     else:
-        note_travel_img = note_travel_bg.copy()
-        img.paste(note_travel_img, (0, 790 + index * 80), note_travel_img)
-        img_draw.text(
-            (120, 830 + index * 80),
-            '等待加入探索队列...',
-            font=sr_font_22,
-            fill=white_color,
-            anchor='lm',
-        )
+        status_mark = '已派遣'
+        status_color = green_color
+    img_draw.text(
+        (65 + index * 90, 870),
+        status_mark,
+        font=gs_font_20,
+        fill=status_color,
+        anchor='mm',
+    )
 
 
 async def get_resin_img(bot_id: str, user_id: str):
     try:
         sqla = get_sqla(bot_id)
-        uid_list: List = await sqla.get_bind_sruid_list(user_id)
+        uid_list: List = await sqla.get_bind_uid_list(user_id)
         logger.info('[每日信息]UID: {}'.format(uid_list))
         # 进行校验UID是否绑定CK
         useable_uid_list = []
@@ -133,19 +101,20 @@ async def get_resin_img(bot_id: str, user_id: str):
 
 async def _draw_all_resin_img(img: Image.Image, uid: str, index: int):
     resin_img = await draw_resin_img(uid)
-    img.paste(resin_img, (700 * index, 0), resin_img)
+    img.paste(resin_img, (500 * index, 0), resin_img)
 
 
-async def seconds2hours_zhcn(seconds: int) -> str:
+async def seconds2hours(seconds: int) -> str:
     m, s = divmod(int(seconds), 60)
     h, m = divmod(m, 60)
     return '%02d小时%02d分' % (h, m)
 
 
-async def draw_resin_img(sr_uid: str) -> Image.Image:
+async def draw_resin_img(uid: str) -> Image.Image:
     # 获取数据
-    daily_data = await mys_api.get_daily_data(sr_uid)
+    daily_data = await mys_api.get_daily_data(uid)
 
+    # 获取背景图片各项参数
     img = await get_simple_bg(based_w, based_h)
     img.paste(white_overlay, (0, 0), white_overlay)
 
@@ -154,97 +123,217 @@ async def draw_resin_img(sr_uid: str) -> Image.Image:
         img.paste(warn_pic, (0, 0), warn_pic)
         # 写UID
         img_draw.text(
-            (350, 680),
-            f'UID{sr_uid}',
-            font=sr_font_26,
+            (250, 553),
+            f'UID{uid}',
+            font=gs_font_26,
             fill=first_color,
             anchor='mm',
         )
         img_draw.text(
-            (350, 650),
+            (250, 518),
             f'错误码 {daily_data}',
-            font=sr_font_26,
+            font=gs_font_26,
             fill=red_color,
             anchor='mm',
         )
         return img
 
-    # nickname and level
-    role_basic_info = await mys_api.get_role_basic_info(sr_uid)
-    nickname = role_basic_info['nickname']
-    level = role_basic_info['level']
-
-    # 开拓力
-    stamina = daily_data['current_stamina']
-    max_stamina = daily_data['max_stamina']
-    stamina_str = f'{stamina}/{max_stamina}'
-    stamina_percent = stamina / max_stamina
-    if stamina_percent > 0.8:
-        stamina_color = red_color
+    enta_data_path = PLAYER_PATH / uid / 'rawData.json'
+    if enta_data_path.exists():
+        with open(enta_data_path, 'r', encoding='utf-8') as f:
+            player_data = json.load(f)
     else:
-        stamina_color = second_color
-    stamina_recovery_time = await seconds2hours_zhcn(
-        daily_data['stamina_recover_time']
+        try:
+            player_data = await get_enka_info(uid)
+        except Exception:
+            player_data = {}
+
+    # 处理数据
+    if player_data and 'playerInfo' in player_data:
+        if 'signature' in player_data['playerInfo']:
+            signature = player_data['playerInfo']['signature']
+        else:
+            signature = '该旅行者还没有签名噢~'
+        world_level = player_data['playerInfo']['level']
+        world_level_str = f'探索等级{str(world_level)}'
+    else:
+        signature = '暂无获取数据'
+        world_level_str = '暂无数据'
+
+    img.paste(resin_fg_pic, (0, 0), resin_fg_pic)
+
+    # 树脂
+    resin = daily_data['current_resin']
+    max_resin = daily_data['max_resin']
+    resin_str = f'{resin}/{max_resin}'
+    resin_percent = resin / max_resin
+    if resin_percent > 0.8:
+        resin_color = red_color
+    else:
+        resin_color = second_color
+    resin_recovery_time = await seconds2hours(
+        daily_data['resin_recovery_time']
     )
 
-    img.paste(note_bg, (0, 0), note_bg)
+    delay = 53
+    # 洞天宝钱
+    home_coin = daily_data['current_home_coin']
+    max_home_coin = daily_data['max_home_coin']
+    home_coin_str = f'{home_coin}/{max_home_coin}'
+    if max_home_coin - home_coin < 200:
+        home_coin_mark = '可收取'
+        home_coin_color = red_color
+        img.paste(no_pic, (35, 559), no_pic)
+    else:
+        home_coin_mark = '已收取'
+        home_coin_color = green_color
+        img.paste(yes_pic, (35, 559), yes_pic)
+    # 完成委托
+    finish_task = daily_data['finished_task_num']
+    total_task = daily_data['total_task_num']
+    is_task_reward = daily_data['is_extra_task_reward_received']
+    task_str = f'{finish_task}/{total_task}'
+    if is_task_reward:
+        task_mark = '已领取'
+        task_color = green_color
+        img.paste(yes_pic, (35, 559 + delay), yes_pic)
+    else:
+        task_mark = '未领取'
+        task_color = red_color
+        img.paste(no_pic, (35, 559 + delay), no_pic)
+    # 周本减半
+    weekly_half = daily_data['remain_resin_discount_num']
+    max_weekly_half = daily_data['resin_discount_num_limit']
+    weekly_half_str = f'{weekly_half}/{max_weekly_half}'
+    if weekly_half == 0:
+        weekly_half_mark = '已使用'
+        weekly_half_color = green_color
+        img.paste(yes_pic, (35, 559 + delay * 2), yes_pic)
+    else:
+        weekly_half_mark = '未用完'
+        weekly_half_color = red_color
+        img.paste(no_pic, (35, 559 + delay * 2), no_pic)
+    # 参量质变仪
+    transformer = daily_data['transformer']['recovery_time']['reached']
+    transformer_day = daily_data['transformer']['recovery_time']['Day']
+    transformer_hour = daily_data['transformer']['recovery_time']['Hour']
+    transformer_str = f'还剩{transformer_day}天{transformer_hour}小时'
+    if transformer:
+        transformer_mark = '可使用'
+        transformer_color = red_color
+        img.paste(no_pic, (35, 559 + delay * 3), no_pic)
+    else:
+        transformer_mark = '已使用'
+        transformer_color = green_color
+        img.paste(yes_pic, (35, 559 + delay * 3), yes_pic)
+
+    img_draw = ImageDraw.Draw(img)
 
     # 派遣
     task_task = []
-    for i in range(4):
-        char = (
-            daily_data['expeditions'][i]
-            if i < len(daily_data['expeditions'])
-            else None
-        )
-        task_task.append(_draw_task_img(img, img_draw, i, char))
+    for index, char in enumerate(daily_data['expeditions']):
+        task_task.append(_draw_task_img(img, img_draw, index, char))
     await asyncio.gather(*task_task)
 
     # 绘制树脂圆环
     ring_pic = Image.open(TEXT_PATH / 'ring.apng')
     percent = (
-        round(stamina_percent * 89)
-        if round(stamina_percent * 89) <= 89
-        else 89
+        round(resin_percent * 49) if round(resin_percent * 49) <= 49 else 49
     )
     ring_pic.seek(percent)
-    img.paste(ring_pic, (0, 5), ring_pic)
+    img.paste(ring_pic, (0, 0), ring_pic)
 
     # 写树脂剩余时间
     img_draw.text(
-        (350, 490),
-        f'还剩{stamina_recovery_time}',
-        font=sr_font_24,
-        fill=stamina_color,
+        (250, 370),
+        f'还剩{resin_recovery_time}',
+        font=gs_font_20,
+        fill=resin_color,
         anchor='mm',
     )
-    # 写Nickname
+    # 写签名
     img_draw.text(
-        (350, 139), nickname, font=sr_font_36, fill=white_color, anchor='mm'
-    )
-    # 写开拓等级
-    img_draw.text(
-        (350, 190),
-        f'开拓等级{level}',
-        font=sr_font_24,
-        fill=white_color,
-        anchor='mm',
+        (48, 137), signature, font=gs_font_26, fill=second_color, anchor='lm'
     )
     # 写UID
     img_draw.text(
-        (350, 663),
-        f'UID{sr_uid}',
-        font=sr_font_26,
-        fill=first_color,
+        (250, 518), f'UID{uid}', font=gs_font_26, fill=first_color, anchor='mm'
+    )
+    # 写探索等级
+    img_draw.text(
+        (250, 281),
+        world_level_str,
+        font=gs_font_26,
+        fill=second_color,
         anchor='mm',
     )
     # 写树脂
     img_draw.text(
-        (350, 450),
-        stamina_str,
-        font=sr_font_50,
+        (250, 327),
+        resin_str,
+        font=gs_font_60,
         fill=first_color,
         anchor='mm',
+    )
+    # 写洞天宝钱
+    img_draw.text(
+        (335, 588),
+        home_coin_str,
+        font=gs_font_20,
+        fill=first_color,
+        anchor='lm',
+    )
+    img_draw.text(
+        (225, 584),
+        home_coin_mark,
+        font=gs_font_32,
+        fill=home_coin_color,
+        anchor='lm',
+    )
+    # 写完成委托
+    img_draw.text(
+        (335, 588 + delay),
+        task_str,
+        font=gs_font_20,
+        fill=first_color,
+        anchor='lm',
+    )
+    img_draw.text(
+        (225, 584 + delay),
+        task_mark,
+        font=gs_font_32,
+        fill=task_color,
+        anchor='lm',
+    )
+    # 写周本减半
+    img_draw.text(
+        (335, 588 + delay * 2),
+        weekly_half_str,
+        font=gs_font_20,
+        fill=first_color,
+        anchor='lm',
+    )
+    img_draw.text(
+        (225, 584 + delay * 2),
+        weekly_half_mark,
+        font=gs_font_32,
+        fill=weekly_half_color,
+        anchor='lm',
+    )
+    # 写参量质变仪
+    img_draw.text(
+        (335, 588 + delay * 3),
+        transformer_str,
+        font=gs_font_20,
+        fill=first_color,
+        anchor='lm',
+    )
+    img_draw.text(
+        (225, 584 + delay * 3),
+        transformer_mark,
+        font=gs_font_32,
+        fill=transformer_color,
+        anchor='lm',
     )
 
     return img
