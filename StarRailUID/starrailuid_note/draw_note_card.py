@@ -49,9 +49,13 @@ async def draw_note_img(sr_uid: str) -> Union[bytes, str]:
     # 获取当前时间
     now = datetime.now()
     current_year_mon = now.strftime('%Y-%m')
-
+    add_month = ''
+    if int(now.month) < 10:
+        add_month = '0'
+    now_month = str(now.year) + str(add_month) + str(now.month)
+    print(now_month)
     # 获取数据
-    data = await mys_api.get_award(sr_uid)
+    data = await mys_api.get_award(sr_uid, now_month)
     if isinstance(data, int):
         return get_error(data)
 
@@ -80,7 +84,12 @@ async def draw_note_img(sr_uid: str) -> Union[bytes, str]:
         with open(last_monthly_path, 'r', encoding='utf-8') as f:
             last_monthly_data = json.load(f)
     else:
-        last_monthly_data = None
+        add_month = ''
+        if int(last_month) < 10:
+            add_month = '0'
+        find_last_month = str(last_year) + str(add_month) + str(last_month)
+        print(find_last_month)
+        last_monthly_data = await mys_api.get_award(sr_uid, find_last_month)
 
     # nickname and level
     role_basic_info = await mys_api.get_role_basic_info(sr_uid)
@@ -232,7 +241,7 @@ async def draw_note_img(sr_uid: str) -> Union[bytes, str]:
         pie_image = Image.new("RGBA", (2100, 2100), color=(255, 255, 255, 0))
         pie_image_draw = ImageDraw.Draw(pie_image)
         for index, i in enumerate(
-            last_monthly_data['data']['month_data']['group_by']
+            last_monthly_data['month_data']['group_by']
         ):
             pie_image_draw.pieslice(
                 xy,

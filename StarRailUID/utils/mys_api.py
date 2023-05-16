@@ -206,7 +206,7 @@ class MysApi(_MysApi):
             data = cast(MysSign, data['data'])
         return data
 
-    async def get_award(self, sr_uid) -> Union[MonthlyAward, int]:
+    async def get_award(self, sr_uid, month) -> Union[MonthlyAward, int]:
         server_id = RECOGNIZE_SERVER.get(str(sr_uid)[0])
         ck = await self.get_ck(sr_uid, 'OWNER')
         if ck is None:
@@ -220,7 +220,7 @@ class MysApi(_MysApi):
                 url=_API['STAR_RAIL_MONTH_INFO_URL'],
                 method='GET',
                 header=HEADER,
-                params={'uid': sr_uid, 'region': server_id, 'month': ''},
+                params={'uid': sr_uid, 'region': server_id, 'month': month},
             )
         else:
             HEADER = copy.deepcopy(self._HEADER_OS)
@@ -231,7 +231,7 @@ class MysApi(_MysApi):
                 url=_API['STAR_RAIL_MONTH_INFO_URL'],
                 method='GET',
                 header=HEADER,
-                params={'uid': sr_uid, 'region': server_id, 'month': ''},
+                params={'uid': sr_uid, 'region': server_id, 'month': month},
                 use_proxy=True,
             )
         if isinstance(data, Dict):
