@@ -148,7 +148,24 @@ async def draw_resin_img(sr_uid: str) -> Image.Image:
     img = note_bg.copy()
 
     if isinstance(daily_data, int):
-        return get_error(daily_data)
+        img_draw = ImageDraw.Draw(img)
+        img.paste(warn_pic, (0, 0), warn_pic)
+        # 写UID
+        img_draw.text(
+            (350, 663),
+            f'UID{sr_uid}',
+            font=sr_font_26,
+            fill=first_color,
+            anchor='mm',
+        )
+        img_draw.text(
+            (250, 518),
+            get_error(daily_data),
+            font=gs_font_26,
+            fill=red_color,
+            anchor='mm',
+        )
+        return img
 
     # nickname and level
     role_basic_info = await mys_api.get_role_basic_info(sr_uid)
