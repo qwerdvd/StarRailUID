@@ -1,5 +1,5 @@
 from io import BytesIO
-from typing import List, TypeVar, Generator
+from typing import TypeVar
 
 from PIL import Image
 from aiohttp import ClientSession
@@ -9,6 +9,7 @@ T = TypeVar("T")
 
 ROLEINFO_PATH = get_res_path() / 'StarRailUID' / 'roleinfo'
 ROLEINFO_PATH.mkdir(parents=True, exist_ok=True)
+
 
 async def get_icon(url: str) -> Image.Image:
     name = url.split('/')[-1]

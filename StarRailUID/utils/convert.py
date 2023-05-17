@@ -4,10 +4,11 @@ from typing import Tuple, Union, Optional, overload
 from gsuid_core.bot import Bot
 from gsuid_core.models import Event
 from gsuid_core.utils.api.mys.models import IndexData
-from ..sruid_utils.api.mys.models import AbyssData
+
 from .api import get_sqla
 from .mys_api import mys_api
 from .error_reply import VERIFY_HINT
+from ..sruid_utils.api.mys.models import AbyssData
 
 
 @overload

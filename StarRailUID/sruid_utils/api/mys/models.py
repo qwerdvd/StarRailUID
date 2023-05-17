@@ -33,9 +33,11 @@ class RoleBasicInfo(TypedDict):
     region: str
     level: int
 
+
 ################
 #   深渊相关   #
 ################
+
 
 class AbyssTime(TypedDict):
     year: int
@@ -44,6 +46,7 @@ class AbyssTime(TypedDict):
     hour: int
     minute: int
 
+
 class AbyssAvatar(TypedDict):
     id: int
     level: int
@@ -51,9 +54,11 @@ class AbyssAvatar(TypedDict):
     rarity: int
     element: str
 
+
 class AbyssNodeDetail(TypedDict):
     challenge_time: AbyssTime
     avatars: List[AbyssAvatar]
+
 
 class AbyssFloorDetail(TypedDict):
     name: str
@@ -61,6 +66,7 @@ class AbyssFloorDetail(TypedDict):
     star_num: int
     node_1: List[AbyssNodeDetail]
     node_2: List[AbyssNodeDetail]
+
 
 class AbyssData(TypedDict):
     schedule_id: int
@@ -72,7 +78,8 @@ class AbyssData(TypedDict):
     has_data: bool
     max_floor_detail: bool
     all_floor_detail: List[AbyssFloorDetail]
-    
+
+
 ################
 # 每月札记相关 #
 ################
