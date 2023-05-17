@@ -215,7 +215,7 @@ async def draw_abyss_img(
         'lm',
     )
 
-    star_num_pic = Image.open(TEXT_PATH / f'star.png')
+    star_num_pic = Image.open(TEXT_PATH / 'star.png')
     img.paste(star_num_pic, (91, 485), star_num_pic)
 
     img_draw.text(
@@ -241,7 +241,8 @@ async def draw_abyss_img(
         floor_name = level['name']
         round_num = level['round_num']
         time_array = level['node_1']['challenge_time']
-        time_str = f"{time_array['year']}-{time_array['month']}-{time_array['day']} {time_array['hour']}:{time_array['minute']}"
+        time_str = f"{time_array['year']}-{time_array['month']}-{time_array['day']}"
+        time_str = f"{time_str} {time_array['hour']}:{time_array['minute']}"
         for index_part in [0, 1]:
             node_num = index_part + 1
             node = f'node_{node_num}'
