@@ -27,7 +27,7 @@ async def download_all_file_from_cos():
         tasks.clear()
         logger.info('[cos]下载完成!')
 
-    failed_list: List[Tuple[str, int, str]] = []
+    failed_list: List[Tuple[str, str, str, str]] = []
     TASKS = []
     async with ClientSession() as sess:
         for res_type in ['resource', 'wiki']:
@@ -77,7 +77,7 @@ async def download_all_file_from_cos():
                         temp_num += 1
                         TASKS.append(
                             asyncio.wait_for(
-                                download_file(url, resource_type, name, sess),
+                                download_file(url, res_type, resource_type, name, sess),
                                 timeout=60,
                             )
                         )
@@ -94,10 +94,10 @@ async def download_all_file_from_cos():
                 logger.info(im)
     if failed_list:
         logger.info(f'[cos]开始重新下载失败的{len(failed_list)}个文件...')
-        for url, file, name in failed_list:
+        for url, res_type, resource_type, name in failed_list:
             TASKS.append(
                 asyncio.wait_for(
-                    download_file(url, file, name, sess),
+                    download_file(url, res_type, resource_type, name, sess),
                     timeout=60,
                 )
             )

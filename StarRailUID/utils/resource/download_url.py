@@ -5,11 +5,16 @@ from gsuid_core.logger import logger
 from aiohttp.client import ClientSession
 from aiohttp.client_exceptions import ClientConnectorError
 
-from .RESOURCE_PATH import RESOURCE_PATH
+from .RESOURCE_PATH import RESOURCE_PATH, WIKI_PATH
+PATHDICT = {
+    'resource': RESOURCE_PATH,
+    'wiki': WIKI_PATH,
+}
 
 
 async def download(
     url: str,
+    res_type: str,
     resource_type: str,
     name: str,
 ) -> Optional[Tuple[str, int, str]]:
@@ -19,6 +24,8 @@ async def download(
     :参数:
       * url: `str`
             资源下载地址。
+      * res_type: `str`
+            资源类型，`resource`或`wiki`。
       * resource_type: `str`
             资源文件夹名
       * name: `str`
@@ -29,11 +36,12 @@ async def download(
         name: `str`
     """
     async with ClientSession() as sess:
-        return await download_file(url, resource_type, name, sess)
+        return await download_file(url, res_type, resource_type, name, sess)
 
 
 async def download_file(
     url: str,
+    res_type: str,
     resource_type: str,
     name: str,
     sess: Optional[ClientSession] = None,
@@ -46,5 +54,5 @@ async def download_file(
     except ClientConnectorError:
         logger.warning(f"[cos]{name}下载失败")
         return url, resource_type, name
-    async with aiofiles.open(RESOURCE_PATH / resource_type / name, "wb") as f:
+    async with aiofiles.open(PATHDICT[res_type] / resource_type / name, "wb") as f:
         await f.write(content)
