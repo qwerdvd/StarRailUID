@@ -5,7 +5,8 @@ from gsuid_core.logger import logger
 from aiohttp.client import ClientSession
 from aiohttp.client_exceptions import ClientConnectorError
 
-from .RESOURCE_PATH import RESOURCE_PATH, WIKI_PATH
+from .RESOURCE_PATH import WIKI_PATH, RESOURCE_PATH
+
 PATHDICT = {
     'resource': RESOURCE_PATH,
     'wiki': WIKI_PATH,
@@ -54,5 +55,7 @@ async def download_file(
     except ClientConnectorError:
         logger.warning(f"[cos]{name}下载失败")
         return url, resource_type, name
-    async with aiofiles.open(PATHDICT[res_type] / resource_type / name, "wb") as f:
+    async with aiofiles.open(
+        PATHDICT[res_type] / resource_type / name, "wb"
+    ) as f:
         await f.write(content)

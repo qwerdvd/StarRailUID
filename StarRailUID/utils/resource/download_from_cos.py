@@ -77,7 +77,9 @@ async def download_all_file_from_cos():
                         temp_num += 1
                         TASKS.append(
                             asyncio.wait_for(
-                                download_file(url, res_type, resource_type, name, sess),
+                                download_file(
+                                    url, res_type, resource_type, name, sess
+                                ),
                                 timeout=60,
                             )
                         )
