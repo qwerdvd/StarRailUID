@@ -171,7 +171,6 @@ async def draw_abyss_img(
     else:
         if raw_abyss_data['max_floor'] == '':
             return '你还没有挑战本期深渊!\n可以使用[sr上期深渊]命令查询上期~'
-        floors_data = raw_abyss_data['all_floor_detail']
         floor_num = len(raw_abyss_data['all_floor_detail'])
 
     # 获取背景图片各项参数
@@ -231,7 +230,6 @@ async def draw_abyss_img(
         'lm',
     )
 
-    task = []
     for index_floor, level in enumerate(raw_abyss_data['all_floor_detail']):
         if index_floor >= 3:
             break
