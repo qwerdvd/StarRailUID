@@ -24,6 +24,8 @@ STAR_RAIL_AVATAR_INFO_URL = (
     f'{NEW_URL}/game_record/app/hkrpg/api/avatar/info'  # 角色详细信息接口
 )
 
+CHALLENGE_INFO_URL = f'{NEW_URL}/game_record/app/hkrpg/api/challenge'
+
 STAR_RAIL_GACHA_LOG_URL = f'{OLD_URL}/common/gacha_record/api/getGachaLog'
 
 
