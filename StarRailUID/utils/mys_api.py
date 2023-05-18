@@ -187,10 +187,10 @@ class MysApi(_MysApi):
         return data
 
     async def get_srspiral_abyss_info(
-        self, 
-        uid: str, 
-        schedule_type='1', 
-        ck: Optional[str] = None, 
+        self,
+        uid: str,
+        schedule_type='1',
+        ck: Optional[str] = None,
     ) -> Union[AbyssData, int]:
         server_id = self.RECOGNIZE_SERVER.get(uid[0])
         data = await self.simple_mys_req(
@@ -206,7 +206,7 @@ class MysApi(_MysApi):
             cookie=ck,
             header=self._HEADER,
         )
-        #print(data)
+        # print(data)
         if isinstance(data, Dict):
             data = cast(AbyssData, data['data'])
         return data

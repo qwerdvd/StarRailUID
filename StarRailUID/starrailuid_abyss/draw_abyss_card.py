@@ -1,4 +1,3 @@
-import asyncio
 from pathlib import Path
 from typing import Union, Optional
 
@@ -10,7 +9,6 @@ from .utils import get_icon
 from ..utils.convert import GsCookie
 from ..utils.image.convert import convert_img
 from ..sruid_utils.api.mys.models import AbyssAvatar
-
 from ..utils.image.image_tools import get_qq_avatar, draw_pic_with_ring
 from ..utils.fonts.starrail_fonts import (
     sr_font_22,
@@ -170,7 +168,7 @@ async def draw_abyss_img(
             return '楼层不能大于10层!'
         if len(raw_abyss_data['all_floor_detail']) < floor:
             return '你还没有挑战该层!'
-    else:   
+    else:
         if raw_abyss_data['max_floor'] == '':
             return '你还没有挑战本期深渊!\n可以使用[sr上期深渊]命令查询上期~'
         floors_data = raw_abyss_data['all_floor_detail']
