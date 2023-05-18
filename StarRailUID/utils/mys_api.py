@@ -45,6 +45,7 @@ class MysApi(_MysApi):
         asyncio.run(self.get_fp())
         self._HEADER['x-rpc-device_id'] = self.device_id
         self._HEADER['x-rpc-page'] = '3.1.3_#/rpg'
+        self._HEADER['x-rpc-challenge_game'] = '6'
 
     async def create_qrcode_url(self) -> Union[Dict, int]:
         device_id: str = ''.join(random.choices(ascii_letters + digits, k=64))
