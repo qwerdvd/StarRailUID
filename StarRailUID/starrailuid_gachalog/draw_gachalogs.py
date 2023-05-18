@@ -406,7 +406,7 @@ async def draw_gachalogs_img(uid: str, user_id: str) -> Union[bytes, str]:
             'mm',
         )
         y_extend += (
-            (1 + ((total_data[type_list[index - 1]]['total'] - 1) // 5)) * 165
+            (1 + ((total_data[type_list[index - 1]]['total'] - 1) // 5)) * 150
             if index != 0
             else 0
         )
@@ -415,7 +415,7 @@ async def draw_gachalogs_img(uid: str, user_id: str) -> Union[bytes, str]:
         tasks = []
         for item_index, item in enumerate(total_data[i]['list']):
             item_x = (item_index % 5) * 138 + 25
-            item_y = (item_index // 5) * 150 + y + 355
+            item_y = (item_index // 5) * 170 + y + 355
             xy_point = (item_x, item_y)
             tasks.append(
                 _draw_card(

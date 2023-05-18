@@ -36,23 +36,11 @@ RECOGNIZE_SERVER = {
 
 
 class MysApi(_MysApi):
-    mysVersion = '2.44.1'
-    _HEADER = {
-        'x-rpc-app_version': mysVersion,
-        'User-Agent': (
-            'Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) '
-            f'AppleWebKit/605.1.15 (KHTML, like Gecko) miHoYoBBS/{mysVersion}'
-        ),
-        'x-rpc-client_type': '5',
-        'x-rpc-device_id': uuid.uuid4().hex,
-        'x-rpc-device_fp': random_hex(16),
-        'x-rpc-page': '3.1.3_#/rpg',
-        'Referer': 'https://webstatic.mihoyo.com/',
-        'Origin': 'https://webstatic.mihoyo.com',
-    }
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._HEADER['x-rpc-device_id'] = uuid.uuid4().hex
+        self._HEADER['x-rpc-device_fp'] = random_hex(14)
+        self._HEADER['x-rpc-page'] = '3.1.3_#/rpg'
 
     async def create_qrcode_url(self) -> Union[Dict, int]:
         device_id: str = ''.join(random.choices(ascii_letters + digits, k=64))
