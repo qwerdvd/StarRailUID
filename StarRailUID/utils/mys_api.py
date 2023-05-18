@@ -3,8 +3,8 @@ import time
 import uuid
 import random
 import asyncio
-from typing import Dict, Union, cast
 from string import digits, ascii_letters
+from typing import Dict, Union, Optional, cast
 
 from gsuid_core.utils.api.mys_api import _MysApi
 from gsuid_core.utils.api.mys.models import MysSign, SignInfo, SignList
@@ -18,6 +18,7 @@ from .api import srdbsqla
 from ..sruid_utils.api.mys.api import _API
 from ..sruid_utils.api.mys.models import (
     GachaLog,
+    AbyssData,
     RoleIndex,
     AvatarInfo,
     MonthlyAward,
@@ -37,13 +38,23 @@ RECOGNIZE_SERVER = {
 
 
 class MysApi(_MysApi):
-    device_id = uuid.uuid4().hex
+    mysVersion = '2.44.1'
+    _HEADER = {
+        'x-rpc-app_version': mysVersion,
+        'User-Agent': (
+            'Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) '
+            f'AppleWebKit/605.1.15 (KHTML, like Gecko) miHoYoBBS/{mysVersion}'
+        ),
+        'x-rpc-client_type': '5',
+        'x-rpc-device_id': uuid.uuid4().hex,
+        'x-rpc-device_fp': random_hex(16),
+        'x-rpc-page': '3.1.3_#/rpg',
+        'Referer': 'https://webstatic.mihoyo.com/',
+        'Origin': 'https://webstatic.mihoyo.com',
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        asyncio.run(self.get_fp())
-        self._HEADER['x-rpc-device_id'] = self.device_id
-        self._HEADER['x-rpc-page'] = '3.1.3_#/rpg'
 
     async def create_qrcode_url(self) -> Union[Dict, int]:
         device_id: str = ''.join(random.choices(ascii_letters + digits, k=64))
@@ -183,6 +194,29 @@ class MysApi(_MysApi):
         )
         if isinstance(data, Dict):
             data = cast(SignInfo, data['data'])
+        return data
+
+    async def get_srspiral_abyss_info(
+        self,
+        uid: str,
+        schedule_type='1',
+        ck: Optional[str] = None,
+    ) -> Union[AbyssData, int]:
+        server_id = self.RECOGNIZE_SERVER.get(uid[0])
+        data = await self.simple_mys_req(
+            'CHALLENGE_INFO_URL',
+            uid,
+            params={
+                'role_id': uid,
+                'schedule_type': schedule_type,
+                'server': server_id,
+            },
+            cookie=ck,
+            header=self._HEADER,
+        )
+        print(data)
+        if isinstance(data, Dict):
+            data = cast(AbyssData, data['data'])
         return data
 
     async def mys_sign(

@@ -3,11 +3,12 @@ from typing import Tuple, Union, Optional, overload
 
 from gsuid_core.bot import Bot
 from gsuid_core.models import Event
-from gsuid_core.utils.api.mys.models import AbyssData, IndexData
+from gsuid_core.utils.api.mys.models import IndexData
 
 from .api import get_sqla
 from .mys_api import mys_api
 from .error_reply import VERIFY_HINT
+from ..sruid_utils.api.mys.models import AbyssData
 
 
 @overload
@@ -71,9 +72,11 @@ class GsCookie:
         return data
 
     async def get_spiral_abyss_data(
-        self, schedule_type: str = '1'
+        self, uid: str, schedule_type: str = '1'
     ) -> Union[AbyssData, int]:
-        data = await mys_api.get_spiral_abyss_info(
+        self.uid = uid
+        self.cookie = await self.sqla.get_random_cookie(uid)
+        data = await mys_api.get_srspiral_abyss_info(
             self.uid, schedule_type, self.cookie
         )
         return data

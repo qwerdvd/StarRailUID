@@ -35,6 +35,52 @@ class RoleBasicInfo(TypedDict):
 
 
 ################
+#   深渊相关   #
+################
+
+
+class AbyssTime(TypedDict):
+    year: int
+    month: int
+    day: int
+    hour: int
+    minute: int
+
+
+class AbyssAvatar(TypedDict):
+    id: int
+    level: int
+    icon: str
+    rarity: int
+    element: str
+
+
+class AbyssNodeDetail(TypedDict):
+    challenge_time: AbyssTime
+    avatars: List[AbyssAvatar]
+
+
+class AbyssFloorDetail(TypedDict):
+    name: str
+    round_num: int
+    star_num: int
+    node_1: List[AbyssNodeDetail]
+    node_2: List[AbyssNodeDetail]
+
+
+class AbyssData(TypedDict):
+    schedule_id: int
+    begin_time: AbyssTime
+    end_time: AbyssTime
+    star_num: int
+    max_floor: str
+    battle_num: int
+    has_data: bool
+    max_floor_detail: bool
+    all_floor_detail: List[AbyssFloorDetail]
+
+
+################
 # 每月札记相关 #
 ################
 
