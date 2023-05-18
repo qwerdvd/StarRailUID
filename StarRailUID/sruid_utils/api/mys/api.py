@@ -26,7 +26,7 @@ STAR_RAIL_AVATAR_INFO_URL = (
 
 STAR_RAIL_GACHA_LOG_URL = f'{OLD_URL}/common/gacha_record/api/getGachaLog'
 
-
+GET_FP_URL = 'https://public-data-api.mihoyo.com/device-fp/api/getFp'
 # CREATE_QRCODE = f'{OLD_URL}/event/bbs_sign_reward/gen_auth_code'
 
 _API = locals()
