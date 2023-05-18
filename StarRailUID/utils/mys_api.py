@@ -2,7 +2,6 @@ import copy
 import time
 import uuid
 import random
-import asyncio
 from string import digits, ascii_letters
 from typing import Dict, Union, Optional, cast
 
@@ -283,20 +282,20 @@ class MysApi(_MysApi):
 
     def generate_seed(self, length: int):
         characters = '0123456789abcdef'
-        result = ''.join(random.choices(characters, k = length))
+        result = ''.join(random.choices(characters, k=length))
         return result
 
     async def get_fp(self):
         seed_id = self.generate_seed(16)
         seed_time = str(int(time.time() * 1000))
-        ext_fields = (f'{{"userAgent":"{self._HEADER["User-Agent"]}",\
+        ext_fields = f'{{"userAgent":"{self._HEADER["User-Agent"]}",\
 "browserScreenSize":281520,"maxTouchPoints":5,\
 "isTouchSupported":true,"browserLanguage":"zh-CN","browserPlat":"iPhone",\
 "browserTimeZone":"Asia/Shanghai","webGlRender":"Apple GPU",\
 "webGlVendor":"Apple Inc.",\
 "numOfPlugins":0,"listOfPlugins":"unknown","screenRatio":3,"deviceMemory":"unknown",\
 "hardwareConcurrency":"4","cpuClass":"unknown","ifNotTrack":"unknown","ifAdBlock":0,\
-"hasLiedResolution":1,"hasLiedOs":0,"hasLiedBrowser":0}}')
+"hasLiedResolution":1,"hasLiedOs":0,"hasLiedBrowser":0}}'
         body = {
             'seed_id': seed_id,
             'device_id': self.device_id,
