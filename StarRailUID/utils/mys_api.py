@@ -1,5 +1,6 @@
 import copy
 import time
+import uuid
 import random
 import asyncio
 from string import digits, ascii_letters
@@ -38,7 +39,7 @@ RECOGNIZE_SERVER = {
 
 class MysApi(_MysApi):
     device_id = uuid.uuid4().hex
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         asyncio.run(self.get_fp())
