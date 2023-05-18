@@ -14,17 +14,13 @@ from ..sruid_utils.api.mys.models import AbyssAvatar
 # )
 from ..utils.image.image_tools import (
     get_qq_avatar,
-    crop_center_img,
     draw_pic_with_ring,
 )
 from ..utils.fonts.starrail_fonts import (
     sr_font_22,
-    sr_font_26,
     sr_font_28,
     sr_font_30,
-    sr_font_32,
     sr_font_34,
-    sr_font_36,
     sr_font_42,
 )
 
@@ -41,8 +37,8 @@ level_cover = Image.open(TEXT_PATH / 'level_cover.png').convert("RGBA")
 char_bg_4 = Image.open(TEXT_PATH / 'char4_bg.png').convert("RGBA")
 char_bg_5 = Image.open(TEXT_PATH / 'char5_bg.png').convert("RGBA")
 
-star_yes = Image.open(TEXT_PATH / f'star.png').convert("RGBA")
-star_gray = Image.open(TEXT_PATH / f'star_gray.png').convert("RGBA")
+star_yes = Image.open(TEXT_PATH / 'star.png').convert("RGBA")
+star_gray = Image.open(TEXT_PATH / 'star_gray.png').convert("RGBA")
 
 elements = {
     "ice": Image.open(TEXT_PATH / "IconNatureColorIce.png").convert("RGBA"),
