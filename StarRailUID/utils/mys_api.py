@@ -2,6 +2,7 @@ import copy
 import time
 import uuid
 import random
+import asyncio
 from typing import Dict, Union, cast
 from string import digits, ascii_letters
 
@@ -36,10 +37,12 @@ RECOGNIZE_SERVER = {
 
 
 class MysApi(_MysApi):
+    device_id = uuid.uuid4().hex
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._HEADER['x-rpc-device_id'] = uuid.uuid4().hex
-        self._HEADER['x-rpc-device_fp'] = random_hex(14)
+        asyncio.run(self.get_fp())
+        self._HEADER['x-rpc-device_id'] = self.device_id
         self._HEADER['x-rpc-page'] = '3.1.3_#/rpg'
 
     async def create_qrcode_url(self) -> Union[Dict, int]:
@@ -191,7 +194,6 @@ class MysApi(_MysApi):
         if int(str(uid)[0]) < 6:
             HEADER = copy.deepcopy(self._HEADER)
             HEADER['Cookie'] = ck
-            HEADER['x-rpc-device_id'] = random_hex(32)
             HEADER['x-rpc-app_version'] = '2.44.1'
             HEADER['x-rpc-client_type'] = '5'
             HEADER['X_Requested_With'] = 'com.mihoyo.hyperion'
@@ -224,7 +226,6 @@ class MysApi(_MysApi):
             HEADER = copy.deepcopy(self._HEADER)
             HEADER['Cookie'] = ck
             HEADER['DS'] = get_web_ds_token(True)
-            HEADER['x-rpc-device_id'] = random_hex(32)
             data = await self._mys_request(
                 url=_API['STAR_RAIL_MONTH_INFO_URL'],
                 method='GET',
@@ -234,7 +235,6 @@ class MysApi(_MysApi):
         else:
             HEADER = copy.deepcopy(self._HEADER_OS)
             HEADER['Cookie'] = ck
-            HEADER['x-rpc-device_id'] = random_hex(32)
             HEADER['DS'] = generate_os_ds()
             data = await self._mys_request(
                 url=_API['STAR_RAIL_MONTH_INFO_URL'],
@@ -256,6 +256,45 @@ class MysApi(_MysApi):
         if isinstance(data, Dict):
             data = cast(RoleBasicInfo, data['data'])
         return data
+    
+    def generate_seed(self, length = 16):
+        characters = '0123456789abcdef'
+        result = ''.join(random.choices(characters, k = length))
+        return result
+    
+    async def get_fp(self):
+        seed_id = self.generate_seed(16)
+        seed_time = str(int(time.time() * 1000))
+        ext_fields = (
+                    f"{{'userAgent':{self._HEADER['User-Agent']},"\
+                    "'browserScreenSize':281520,'maxTouchPoints':5,"\
+                    "'isTouchSupported':true,'browserLanguage':'zh-CN','browserPlat':'iPhone',"\
+                    "'browserTimeZone':'Asia/Shanghai','webGlRender':'Apple GPU','webGlVendor':'Apple Inc.',"\
+                    "'numOfPlugins':0,'listOfPlugins':'unknown','screenRatio':3,'deviceMemory':'unknown',"\
+                    "'hardwareConcurrency':'4','cpuClass':'unknown','ifNotTrack':'unknown','ifAdBlock':0,"\
+                    "'hasLiedResolution':1,'hasLiedOs':0,'hasLiedBrowser':0}"
+        )
+        body = {
+            'seed_id': seed_id,
+            'device_id': self.device_id,
+            'platform': '5',
+            'seed_time': seed_time,
+            'ext_fields': ext_fields,
+            'app_name': 'account_cn',
+            'device_fp': '38d7ee834d1e9',
+        }
+        HEADER = copy.deepcopy(self._HEADER)
+        res = await self._mys_request(        
+            url=_API['GET_FP_URL'],
+            method='POST',
+            header=HEADER,
+            data=body,
+        )
+        if res["retcode"] != 0:
+            print("获取fp失败")
+            print(res)
+        else:
+            self._HEADER['x-rpc-device_fp'] = res['data']['device_fp']
 
 
 mys_api = MysApi()
