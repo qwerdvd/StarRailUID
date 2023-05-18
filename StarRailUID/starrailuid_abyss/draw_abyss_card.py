@@ -1,6 +1,6 @@
 import asyncio
 from pathlib import Path
-from typing import Union
+from typing import Union, Optional
 
 from PIL import Image, ImageDraw
 from gsuid_core.logger import logger
@@ -11,7 +11,6 @@ from ..utils.convert import GsCookie
 from ..utils.image.convert import convert_img
 from ..sruid_utils.api.mys.models import AbyssAvatar
 
-# )
 from ..utils.image.image_tools import get_qq_avatar, draw_pic_with_ring
 from ..utils.fonts.starrail_fonts import (
     sr_font_22,
@@ -21,10 +20,18 @@ from ..utils.fonts.starrail_fonts import (
     sr_font_42,
 )
 
-# from ..utils.resource.download_url import download_file
-# from ..utils.resource.generate_char_card import create_single_char_card
-# from ..utils.resource.RESOURCE_PATH import (
-# CHAR_ICON_PATH,
+abyss_list = {
+    '1': '琥珀恩赐其一',
+    '2': '琥珀恩赐其二',
+    '3': '琥珀恩赐其三',
+    '4': '琥珀恩赐其四',
+    '5': '琥珀恩赐其五',
+    '6': '琥珀恩赐其六',
+    '7': '琥珀恩赐其七',
+    '8': '琥珀恩赐其八',
+    '9': '琥珀恩赐其九',
+    '10': '琥珀恩赐其十',
+}
 
 TEXT_PATH = Path(__file__).parent / 'texture2D'
 white_color = (255, 255, 255)
@@ -134,6 +141,7 @@ async def _draw_floor_card(
 async def draw_abyss_img(
     qid: Union[str, int],
     uid: str,
+    floor: Optional[int] = None,
     schedule_type: str = '1',
 ) -> Union[bytes, str]:
     # 获取Cookies
@@ -156,30 +164,22 @@ async def draw_abyss_img(
     # char_temp = {}
 
     # 获取查询者数据
-    # if floor:
-    # floor = floor - 9
-    # if floor < 0:
-    # return '楼层不能小于9层!'
-    # if len(raw_abyss_data['floors']) >= floor + 1:
-    # floors_data = raw_abyss_data['floors'][floor]
-    # else:
-    # return '你还没有挑战该层!'
-    # else:
-    # if len(raw_abyss_data['floors']) == 0:
-    # return '你还没有挑战本期深渊!\n可以使用[上期深渊]命令查询上期~'
-    # floors_data = raw_abyss_data['floors'][-1]
-    if raw_abyss_data['max_floor'] == '':
-        return '你还没有挑战本期深渊!\n可以使用[sr上期深渊]命令查询上期~'
-    # if floors_data['levels'][-1]['battles']:
-    # is_unfull = False
-    # else:
-    # is_unfull = True
+    if floor:
+        floor_num = 1
+        if floor > 10:
+            return '楼层不能大于10层!'
+        if len(raw_abyss_data['all_floor_detail']) < floor:
+            return '你还没有挑战该层!'
+    else:   
+        if raw_abyss_data['max_floor'] == '':
+            return '你还没有挑战本期深渊!\n可以使用[sr上期深渊]命令查询上期~'
+        floors_data = raw_abyss_data['all_floor_detail']
+        floor_num = len(raw_abyss_data['all_floor_detail'])
 
     # 获取背景图片各项参数
     based_w = 900
-    floor_num = len(raw_abyss_data['all_floor_detail'])
     if floor_num >= 3:
-        based_h = 1227
+        based_h = 2367
     else:
         based_h = 657 + 570 * floor_num
     img = img_bg.copy()
@@ -279,28 +279,21 @@ async def draw_abyss_img(
                 # )
                 # char_temp[char["id"]] = talent_num
                 # break
-                task.append(
-                    _draw_abyss_card(
-                        char,
-                        0,  # type: ignore
-                        floor_pic,
-                        index_char,
-                        index_part,
-                    )
+                await _draw_abyss_card(
+                    char,
+                    0,  # type: ignore
+                    floor_pic,
+                    index_char,
+                    index_part,
                 )
-        await asyncio.gather(*task)
-        task.clear()
-        task.append(
-            _draw_floor_card(
-                level_star,
-                floor_pic,
-                img,
-                index_floor,
-                floor_name,
-                round_num,
-            )
+        await _draw_floor_card(
+            level_star,
+            floor_pic,
+            img,
+            index_floor,
+            floor_name,
+            round_num,
         )
-        await asyncio.gather(*task)
 
     # title_data = {
     # '最强一击!': damage_rank[0],
