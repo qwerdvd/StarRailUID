@@ -2,7 +2,7 @@ import copy
 import time
 import uuid
 import random
-from typing import Dict, Union, cast
+from typing import Dict, Union, cast, Optional
 from string import digits, ascii_letters
 
 from gsuid_core.utils.api.mys_api import _MysApi
@@ -19,6 +19,7 @@ from ..sruid_utils.api.mys.models import (
     GachaLog,
     RoleIndex,
     AvatarInfo,
+    AbyssData,
     MonthlyAward,
     DailyNoteData,
     RoleBasicInfo,
@@ -181,7 +182,30 @@ class MysApi(_MysApi):
         if isinstance(data, Dict):
             data = cast(SignInfo, data['data'])
         return data
-
+    
+    async def get_srspiral_abyss_info(
+        self, 
+        uid: str, 
+        schedule_type='1', 
+        ck: Optional[str] = None, 
+    ) -> Union[AbyssData, int]:
+        server_id = self.RECOGNIZE_SERVER.get(uid[0])
+        data = await self.simple_mys_req(
+            'CHALLENGE_INFO_URL',
+            uid,
+            params={
+                'role_id': uid,
+                'schedule_type': schedule_type,
+                'server': server_id,
+            },
+            cookie=ck,
+            header=self._HEADER,
+        )
+        print(data)
+        if isinstance(data, Dict):
+            data = cast(AbyssData, data['data'])
+        return data
+    
     async def mys_sign(
         self, uid, header={}, server_id='cn_gf01'
     ) -> Union[MysSign, int]:
