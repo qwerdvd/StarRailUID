@@ -38,7 +38,7 @@ RECOGNIZE_SERVER = {
 
 class MysApi(_MysApi):
     device_id = uuid.uuid4().hex
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         asyncio.run(self.get_fp())
