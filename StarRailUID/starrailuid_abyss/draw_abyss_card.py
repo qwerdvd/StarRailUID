@@ -222,7 +222,7 @@ async def draw_abyss_img(
         'lm',
     )
 
-    star_num_pic = Image.open(TEXT_PATH / f'star.png')
+    star_num_pic = Image.open(TEXT_PATH / 'star.png')
     img.paste(star_num_pic, (615, 557), star_num_pic)
 
     img_draw.text(
@@ -246,7 +246,9 @@ async def draw_abyss_img(
             node = f'node_{node_num}'
             # 节点1
             time_array = level[node]['challenge_time']
-            time_str = f"{time_array['year']}-{time_array['month']}-{time_array['day']}"
+            time_str = （
+                f"{time_array['year']}-{time_array['month']}-{time_array['day']}"
+            ）
             time_str = (
                 f"{time_str} {time_array['hour']}:{time_array['minute']}:00"
             )
