@@ -256,24 +256,23 @@ class MysApi(_MysApi):
         if isinstance(data, Dict):
             data = cast(RoleBasicInfo, data['data'])
         return data
-    
-    def generate_seed(self, length = 16):
+
+    def generate_seed(self, length: int):
         characters = '0123456789abcdef'
         result = ''.join(random.choices(characters, k = length))
         return result
-    
+
     async def get_fp(self):
         seed_id = self.generate_seed(16)
         seed_time = str(int(time.time() * 1000))
-        ext_fields = (
-                    f"{{'userAgent':{self._HEADER['User-Agent']},"\
-                    "'browserScreenSize':281520,'maxTouchPoints':5,"\
-                    "'isTouchSupported':true,'browserLanguage':'zh-CN','browserPlat':'iPhone',"\
-                    "'browserTimeZone':'Asia/Shanghai','webGlRender':'Apple GPU','webGlVendor':'Apple Inc.',"\
-                    "'numOfPlugins':0,'listOfPlugins':'unknown','screenRatio':3,'deviceMemory':'unknown',"\
-                    "'hardwareConcurrency':'4','cpuClass':'unknown','ifNotTrack':'unknown','ifAdBlock':0,"\
-                    "'hasLiedResolution':1,'hasLiedOs':0,'hasLiedBrowser':0}"
-        )
+        ext_fields = (f'{{"userAgent":"{self._HEADER["User-Agent"]}",\
+"browserScreenSize":281520,"maxTouchPoints":5,\
+"isTouchSupported":true,"browserLanguage":"zh-CN","browserPlat":"iPhone",\
+"browserTimeZone":"Asia/Shanghai","webGlRender":"Apple GPU",\
+"webGlVendor":"Apple Inc.",\
+"numOfPlugins":0,"listOfPlugins":"unknown","screenRatio":3,"deviceMemory":"unknown",\
+"hardwareConcurrency":"4","cpuClass":"unknown","ifNotTrack":"unknown","ifAdBlock":0,\
+"hasLiedResolution":1,"hasLiedOs":0,"hasLiedBrowser":0}}')
         body = {
             'seed_id': seed_id,
             'device_id': self.device_id,
@@ -284,17 +283,22 @@ class MysApi(_MysApi):
             'device_fp': '38d7ee834d1e9',
         }
         HEADER = copy.deepcopy(self._HEADER)
-        res = await self._mys_request(        
+        res = await self._mys_request(
             url=_API['GET_FP_URL'],
             method='POST',
             header=HEADER,
             data=body,
         )
         if res["retcode"] != 0:
-            print("获取fp失败")
+            print("获取fp连接失败")
             print(res)
+            self._HEADER['x-rpc-device_fp'] = random_hex(13).lower()
+        elif res["data"]["code"] != 200:
+            print("获取fp参数不正确")
+            print(res["data"]["msg"])
+            self._HEADER['x-rpc-device_fp'] = random_hex(13).lower()
         else:
-            self._HEADER['x-rpc-device_fp'] = res['data']['device_fp']
+            self._HEADER['x-rpc-device_fp'] = res["data"]["device_fp"]
 
 
 mys_api = MysApi()
