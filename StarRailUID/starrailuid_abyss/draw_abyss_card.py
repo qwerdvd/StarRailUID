@@ -231,8 +231,14 @@ async def draw_abyss_img(
     )
 
     for index_floor, level in enumerate(raw_abyss_data['all_floor_detail']):
-        if index_floor >= 3:
-            break
+        if floor:
+            if abyss_list[str(floor)] == level['name']:
+                index_floor = 0
+            else:
+                continue
+        else:
+            if index_floor >= 3:
+                break
         floor_pic = Image.open(TEXT_PATH / 'floor_bg.png')
         level_star = level['star_num']
         floor_name = level['name']
