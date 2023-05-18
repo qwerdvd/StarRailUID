@@ -12,10 +12,7 @@ from ..utils.image.convert import convert_img
 from ..sruid_utils.api.mys.models import AbyssAvatar
 
 # )
-from ..utils.image.image_tools import (
-    get_qq_avatar,
-    draw_pic_with_ring,
-)
+from ..utils.image.image_tools import get_qq_avatar, draw_pic_with_ring
 from ..utils.fonts.starrail_fonts import (
     sr_font_22,
     sr_font_28,
