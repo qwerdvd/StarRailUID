@@ -6,6 +6,7 @@ import asyncio
 from string import digits, ascii_letters
 from typing import Dict, Union, Optional, cast
 
+from gsuid_core.logger import logger
 from gsuid_core.utils.api.mys_api import _MysApi
 from gsuid_core.utils.api.mys.models import MysSign, SignInfo, SignList
 from gsuid_core.utils.api.mys.tools import (
@@ -42,7 +43,14 @@ class MysApi(_MysApi):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        asyncio.run(self.get_fp())
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            device_fp = loop.run_until_complete(self.get_fp())
+            self._HEADER['x-rpc-device_fp'] = device_fp
+        finally:
+            loop.run_until_complete(loop.shutdown_asyncgens())
+            loop.close()
         self._HEADER['x-rpc-device_id'] = self.device_id
         self._HEADER['x-rpc-page'] = '3.1.3_#/rpg'
         self._HEADER['x-rpc-challenge_game'] = '6'
@@ -316,16 +324,14 @@ class MysApi(_MysApi):
             header=HEADER,
             data=body,
         )
-        if res["retcode"] != 0:
-            print("获取fp连接失败")
-            print(res)
-            self._HEADER['x-rpc-device_fp'] = random_hex(13).lower()
+        if not isinstance(res, Dict):
+            logger.error(f"获取fp连接失败{res}")
+            return random_hex(13).lower()
         elif res["data"]["code"] != 200:
-            print("获取fp参数不正确")
-            print(res["data"]["msg"])
-            self._HEADER['x-rpc-device_fp'] = random_hex(13).lower()
+            logger.error(f"获取fp参数不正确{res['data']['msg']}")
+            return random_hex(13).lower()
         else:
-            self._HEADER['x-rpc-device_fp'] = res["data"]["device_fp"]
+            return res["data"]["device_fp"]
 
 
 mys_api = MysApi()
