@@ -8,8 +8,8 @@ from gsuid_core.utils.api.enka.models import EnkaData
 from .to_data import api_to_dict
 from ..utils.image.convert import convert_img
 from ..utils.fonts.first_world import fw_font_28
+from ..utils.fonts.starrail_fonts import sr_font_24, sr_font_30, sr_font_58
 from ..utils.resource.RESOURCE_PATH import CHAR_ICON_PATH, CHAR_PREVIEW_PATH
-from ..utils.fonts.starrail_fonts import sr_font_24, sr_font_58, sr_font_30
 from ..utils.map.name_covert import name_to_avatar_id, avatar_id_to_char_star
 
 half_color = (255, 255, 255, 120)
@@ -78,9 +78,9 @@ async def draw_enka_card(
 
     img = Image.open(TEXT_PATH / 'shin-w.jpg').resize((based_w, based_h))
     img.paste(tag, (0, 0), tag)
-    
+
     img_draw = ImageDraw.Draw(img, 'RGBA')
-    
+
     # 写底层文字
     img_draw.text(
         (690, based_h - 16),
@@ -89,7 +89,7 @@ async def draw_enka_card(
         fw_font_28,
         'mm',
     )
-    
+
     img_draw.text(
         (225, 120),
         line1,
@@ -114,6 +114,7 @@ async def draw_enka_card(
     img = await convert_img(img)
     return img
 
+
 async def draw_mihomo_char(index: int, img: Image.Image, char_data: dict):
     char_id = char_data['avatarId']
     char_name = char_data['avatarName']
@@ -133,7 +134,7 @@ async def draw_mihomo_char(index: int, img: Image.Image, char_data: dict):
         char_img = char_img.crop((103, 0, 347, 517))
         char_temp.paste(char_img, (32, 38), char_img)
     char_card.paste(char_temp, (0, 0), char_bg_mask)
-    
+
     img_draw = ImageDraw.Draw(char_card, 'RGBA')
     img_draw.text(
         (150, 585),
@@ -144,6 +145,7 @@ async def draw_mihomo_char(index: int, img: Image.Image, char_data: dict):
     )
     x = 42 + index * 325
     img.paste(char_card, (x, 199), char_card)
+
 
 async def draw_enka_char(index: int, img: Image.Image, char_data: dict):
     char_id = char_data['avatarId']
