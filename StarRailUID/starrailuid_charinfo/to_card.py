@@ -21,6 +21,7 @@ gray_color = (175, 175, 175)
 # MAP_PATH = Path(__file__).parent / 'map'
 TEXT_PATH = Path(__file__).parent / 'texture2D'
 char_mask = Image.open(TEXT_PATH / 'char_mask.png')
+char_bg_mask = Image.open(TEXT_PATH / 'char_bg_mask.png')
 tag = Image.open(TEXT_PATH / 'tag.png')
 footbar = Image.open(TEXT_PATH / 'footbar.png')
 pic_500 = Image.open(TEXT_PATH / '500.png')
@@ -118,13 +119,21 @@ async def draw_mihomo_char(index: int, img: Image.Image, char_data: dict):
     char_name = char_data['avatarName']
     char_star = await avatar_id_to_char_star(str(char_id))
     char_card = Image.open(TEXT_PATH / f'char{char_star}_bg.png')
+    char_temp = Image.new('RGBA', (300, 650))
     char_img = (
         Image.open(str(CHAR_PREVIEW_PATH / f'{char_id}.png'))
         .convert('RGBA')
         .resize((449, 615))
     )
-    char_img = char_img.crop((103, 0, 347, 517))
-    char_card.paste(char_img, (32, 38), char_img)
+    if char_name == '希儿':
+        char_img = char_img.resize((449, 650))
+        char_img = char_img.crop((135, 0, 379, 457))
+        char_temp.paste(char_img, (32, 98), char_img)
+    else:
+        char_img = char_img.crop((103, 0, 347, 517))
+        char_temp.paste(char_img, (32, 38), char_img)
+    char_card.paste(char_temp, (0, 0), char_bg_mask)
+    
     img_draw = ImageDraw.Draw(char_card, 'RGBA')
     img_draw.text(
         (150, 585),
