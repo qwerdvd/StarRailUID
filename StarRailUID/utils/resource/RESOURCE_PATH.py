@@ -20,6 +20,7 @@ WEAPON_PATH = RESOURCE_PATH / 'light_cone'
 RELIC_PATH = RESOURCE_PATH / 'relic'
 SKILL_PATH = RESOURCE_PATH / 'skill'
 TEMP_PATH = RESOURCE_PATH / 'temp'
+CHAR_PREVIEW_PATH = RESOURCE_PATH / 'character_preview'
 
 WIKI_LIGHT_CONE_PATH = WIKI_PATH / 'lightcone'
 WIKI_MATERIAL_FOR_ROLE = WIKI_PATH / 'material for role'
@@ -38,6 +39,7 @@ def init_dir():
         WIKI_PATH,
         CHAR_ICON_PATH,
         CHAR_PORTRAIT_PATH,
+        CHAR_PREVIEW_PATH,
         CONSUMABLE_PATH,
         ELEMENT_PATH,
         WEAPON_PATH,

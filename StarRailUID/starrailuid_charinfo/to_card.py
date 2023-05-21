@@ -7,14 +7,16 @@ from gsuid_core.utils.api.enka.models import EnkaData
 
 from .to_data import api_to_dict
 from ..utils.image.convert import convert_img
-from ..utils.resource.RESOURCE_PATH import CHAR_ICON_PATH
-from ..utils.fonts.starrail_fonts import sr_font_18, sr_font_58
+from ..utils.fonts.first_world import fw_font_28
+from ..utils.resource.RESOURCE_PATH import CHAR_ICON_PATH, CHAR_PREVIEW_PATH
+from ..utils.fonts.starrail_fonts import sr_font_24, sr_font_58, sr_font_30
 from ..utils.map.name_covert import name_to_avatar_id, avatar_id_to_char_star
 
 half_color = (255, 255, 255, 120)
 first_color = (29, 29, 29)
 second_color = (67, 61, 56)
 white_color = (247, 247, 247)
+gray_color = (175, 175, 175)
 
 # MAP_PATH = Path(__file__).parent / 'map'
 TEXT_PATH = Path(__file__).parent / 'texture2D'
@@ -22,7 +24,6 @@ char_mask = Image.open(TEXT_PATH / 'char_mask.png')
 tag = Image.open(TEXT_PATH / 'tag.png')
 footbar = Image.open(TEXT_PATH / 'footbar.png')
 pic_500 = Image.open(TEXT_PATH / '500.png')
-pic_204 = Image.open(TEXT_PATH / '204.png')
 
 
 async def api_to_card(
@@ -32,8 +33,6 @@ async def api_to_card(
     if isinstance(char_data_list, str):
         if ('服务器正在维护或者关闭中' in char_data_list) or ('网络不太稳定' in char_data_list):
             return await convert_img(pic_500)
-        elif '未打开角色展柜' in char_data_list:
-            return await convert_img(pic_204)
         else:
             return await convert_img(pic_500)
     else:
@@ -48,6 +47,9 @@ async def draw_enka_card(
     uid: str, char_list: Optional[List] = None, showfrom: int = 0
 ):
     char_data_list = []
+    if '希儿' in char_list:
+        char_list.remove('希儿')
+        char_list.append('希儿')
     for char in char_list:
         char_data_list.append(
             {'avatarName': char, 'avatarId': await name_to_avatar_id(char)}
@@ -60,43 +62,79 @@ async def draw_enka_card(
                 Image.new('RGBA', (0, 1), (255, 255, 255))
             )
         else:
-            line1 = '刷新成功!'
-    print(char_data_list[0]["avatarName"])
-    line2 = f'UID {str(uid)}请使用 sr查询{char_data_list[0]["avatarName"]} 命令进行查询!'
+            line1 = f'UID {str(uid)} 刷新成功'
+    # print(char_list)
+    line2 = f'可以使用 sr查询{char_data_list[0]["avatarName"]} 查询详情角色面板'
     char_num = len(char_data_list)
-    if char_num <= 8:
-        based_w, based_h = 1000, 240 + ((char_num + 3) // 4) * 220
+    if char_num <= 4:
+        based_w, based_h = 1380, 926
+        show_type = 1
     else:
-        based_w, based_h = 1200, 660 + (char_num - 5) // 5 * 110
+        show_type = 0
+        based_w, based_h = 1380, 660 + (char_num - 5) // 5 * 110
         if (char_num - 5) % 5 >= 4:
             based_h += 110
 
     img = Image.open(TEXT_PATH / 'shin-w.jpg').resize((based_w, based_h))
     img.paste(tag, (0, 0), tag)
-    # img.paste(footbar, ((based_w - 800) // 2, based_h - 36), footbar)
+    
     img_draw = ImageDraw.Draw(img, 'RGBA')
-
+    
+    # 写底层文字
     img_draw.text(
-        (97, 98),
+        (690, based_h - 16),
+        '--Created by qwerdvd-Designed By Wuyi-Thank for mihomo.me--',
+        (0, 0, 255),
+        fw_font_28,
+        'mm',
+    )
+    
+    img_draw.text(
+        (225, 120),
         line1,
         white_color,
         sr_font_58,
         'lm',
     )
     img_draw.text(
-        (99, 140),
+        (225, 175),
         line2,
-        white_color,
-        sr_font_18,
+        gray_color,
+        sr_font_24,
         'lm',
     )
     tasks = []
     for index, char_data in enumerate(char_data_list):
-        tasks.append(draw_enka_char(index, img, char_data))
+        if show_type == 0:
+            tasks.append(draw_enka_char(index, img, char_data))
+        else:
+            tasks.append(draw_mihomo_char(index, img, char_data))
     await asyncio.gather(*tasks)
     img = await convert_img(img)
     return img
 
+async def draw_mihomo_char(index: int, img: Image.Image, char_data: dict):
+    char_id = char_data['avatarId']
+    char_name = char_data['avatarName']
+    char_star = await avatar_id_to_char_star(str(char_id))
+    char_card = Image.open(TEXT_PATH / f'char{char_star}_bg.png')
+    char_img = (
+        Image.open(str(CHAR_PREVIEW_PATH / f'{char_id}.png'))
+        .convert('RGBA')
+        .resize((449, 615))
+    )
+    char_img = char_img.crop((103, 0, 347, 517))
+    char_card.paste(char_img, (32, 38), char_img)
+    img_draw = ImageDraw.Draw(char_card, 'RGBA')
+    img_draw.text(
+        (150, 585),
+        char_name,
+        white_color,
+        sr_font_30,
+        'mm',
+    )
+    x = 42 + index * 325
+    img.paste(char_card, (x, 199), char_card)
 
 async def draw_enka_char(index: int, img: Image.Image, char_data: dict):
     char_id = char_data['avatarId']
