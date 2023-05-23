@@ -5,14 +5,9 @@ import random
 from string import digits, ascii_letters
 from typing import Dict, Union, Optional, cast
 
-from gsuid_core.logger import logger
 from gsuid_core.utils.api.mys_api import _MysApi
 from gsuid_core.utils.api.mys.models import MysSign, SignInfo, SignList
-from gsuid_core.utils.api.mys.tools import (
-    random_hex,
-    generate_os_ds,
-    get_web_ds_token,
-)
+from gsuid_core.utils.api.mys.tools import generate_os_ds, get_web_ds_token
 
 from .api import srdbsqla
 from ..sruid_utils.api.mys.api import _API
