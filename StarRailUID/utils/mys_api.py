@@ -2,7 +2,6 @@ import copy
 import time
 import uuid
 import random
-import asyncio
 from string import digits, ascii_letters
 from typing import Dict, Union, Optional, cast
 
@@ -39,22 +38,8 @@ RECOGNIZE_SERVER = {
 
 
 class MysApi(_MysApi):
-    device_id = uuid.uuid4().hex
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._HEADER = copy.deepcopy(self._HEADER)
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        try:
-            device_fp = loop.run_until_complete(self.get_fp())
-            self._HEADER['x-rpc-device_fp'] = device_fp
-        finally:
-            loop.run_until_complete(loop.shutdown_asyncgens())
-            loop.close()
-        self._HEADER['x-rpc-device_id'] = self.device_id
-        self._HEADER['x-rpc-page'] = '3.1.3_#/rpg'
-        self._HEADER['x-rpc-challenge_game'] = '6'
 
     async def create_qrcode_url(self) -> Union[Dict, int]:
         device_id: str = ''.join(random.choices(ascii_letters + digits, k=64))
@@ -292,47 +277,6 @@ class MysApi(_MysApi):
         if isinstance(data, Dict):
             data = cast(RoleBasicInfo, data['data'])
         return data
-
-    def generate_seed(self, length: int):
-        characters = '0123456789abcdef'
-        result = ''.join(random.choices(characters, k=length))
-        return result
-
-    async def get_fp(self):
-        seed_id = self.generate_seed(16)
-        seed_time = str(int(time.time() * 1000))
-        ext_fields = f'{{"userAgent":"{self._HEADER["User-Agent"]}",\
-"browserScreenSize":281520,"maxTouchPoints":5,\
-"isTouchSupported":true,"browserLanguage":"zh-CN","browserPlat":"iPhone",\
-"browserTimeZone":"Asia/Shanghai","webGlRender":"Apple GPU",\
-"webGlVendor":"Apple Inc.",\
-"numOfPlugins":0,"listOfPlugins":"unknown","screenRatio":3,"deviceMemory":"unknown",\
-"hardwareConcurrency":"4","cpuClass":"unknown","ifNotTrack":"unknown","ifAdBlock":0,\
-"hasLiedResolution":1,"hasLiedOs":0,"hasLiedBrowser":0}}'
-        body = {
-            'seed_id': seed_id,
-            'device_id': self.device_id,
-            'platform': '5',
-            'seed_time': seed_time,
-            'ext_fields': ext_fields,
-            'app_name': 'account_cn',
-            'device_fp': '38d7ee834d1e9',
-        }
-        HEADER = copy.deepcopy(self._HEADER)
-        res = await self._mys_request(
-            url=_API['GET_FP_URL'],
-            method='POST',
-            header=HEADER,
-            data=body,
-        )
-        if not isinstance(res, Dict):
-            logger.error(f"获取fp连接失败{res}")
-            return random_hex(13).lower()
-        elif res["data"]["code"] != 200:
-            logger.error(f"获取fp参数不正确{res['data']['msg']}")
-            return random_hex(13).lower()
-        else:
-            return res["data"]["device_fp"]
 
 
 mys_api = MysApi()
