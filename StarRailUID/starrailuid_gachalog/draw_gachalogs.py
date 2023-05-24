@@ -62,6 +62,7 @@ NORMAL_LIST = [
     '制胜的瞬间',
     '无可取代的东西',
     '时节不居',
+    '如泥酣眠',
 ]
 
 UP_LIST = {
@@ -309,7 +310,7 @@ async def draw_gachalogs_img(uid: str, user_id: str) -> Union[bytes, str]:
             total_data[i]['type'] = '仓鼠型'
 
     # 常量偏移数据
-    single_y = 150
+    single_y = 170
 
     # 计算图片尺寸
     normal_y = (1 + ((total_data['群星跃迁']['total'] - 1) // 5)) * single_y
@@ -406,7 +407,7 @@ async def draw_gachalogs_img(uid: str, user_id: str) -> Union[bytes, str]:
             'mm',
         )
         y_extend += (
-            (1 + ((total_data[type_list[index - 1]]['total'] - 1) // 5)) * 150
+            (1 + ((total_data[type_list[index - 1]]['total'] - 1) // 5)) * single_y
             if index != 0
             else 0
         )
@@ -415,7 +416,7 @@ async def draw_gachalogs_img(uid: str, user_id: str) -> Union[bytes, str]:
         tasks = []
         for item_index, item in enumerate(total_data[i]['list']):
             item_x = (item_index % 5) * 138 + 25
-            item_y = (item_index // 5) * 170 + y + 355
+            item_y = (item_index // 5) * single_y + y + 355
             xy_point = (item_x, item_y)
             tasks.append(
                 _draw_card(
