@@ -407,7 +407,8 @@ async def draw_gachalogs_img(uid: str, user_id: str) -> Union[bytes, str]:
             'mm',
         )
         y_extend += (
-            (1 + ((total_data[type_list[index - 1]]['total'] - 1) // 5)) * single_y
+            (1 + ((total_data[type_list[index - 1]]['total'] - 1) // 5))
+            * single_y
             if index != 0
             else 0
         )
