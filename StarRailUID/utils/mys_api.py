@@ -24,10 +24,10 @@ RECOGNIZE_SERVER = {
     '1': 'prod_gf_cn',
     '2': 'prod_gf_cn',
     # '5': 'cn_qd01',
-     '6': 'os_usa',
-     '7': 'os_euro',
-     '8': 'os_asia',
-     '9': 'os_cht',
+    '6': 'os_usa',
+    '7': 'os_euro',
+    '8': 'os_asia',
+    '9': 'os_cht',
 }
 
 
@@ -160,7 +160,7 @@ class MysApi(_MysApi):
             HEADER = copy.deepcopy(self._HEADER_OS)
             HEADER['Cookie'] = await self.get_ck(uid, 'OWNER')
             HEADER['DS'] = generate_os_ds()
-            header=HEADER
+            header = HEADER
         else:
             params = {
                 'act_id': 'e202304121516551',
