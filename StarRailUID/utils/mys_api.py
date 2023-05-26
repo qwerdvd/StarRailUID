@@ -24,16 +24,19 @@ RECOGNIZE_SERVER = {
     '1': 'prod_gf_cn',
     '2': 'prod_gf_cn',
     # '5': 'cn_qd01',
-    # '6': 'os_usa',
-    # '7': 'os_euro',
-    # '8': 'os_asia',
-    # '9': 'os_cht',
+     '6': 'os_usa',
+     '7': 'os_euro',
+     '8': 'os_asia',
+     '9': 'os_cht',
 }
 
 
 class MysApi(_MysApi):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+    def check_os(self, uid: str) -> bool:
+        return False if int(str(uid)[0]) < 6 else True
 
     async def create_qrcode_url(self) -> Union[Dict, int]:
         device_id: str = ''.join(random.choices(ascii_letters + digits, k=64))
@@ -126,13 +129,13 @@ class MysApi(_MysApi):
         return data
 
     async def get_sign_list(self, uid) -> Union[SignList, int]:
-        # is_os = self.check_os(uid)
-        is_os = False
+        is_os = self.check_os(uid)
         if is_os:
             params = {
-                'act_id': 'e202304121516551',
+                'act_id': 'e202303301540311',
                 'lang': 'zh-cn',
             }
+
         else:
             params = {
                 'act_id': 'e202304121516551',
@@ -147,19 +150,17 @@ class MysApi(_MysApi):
 
     async def get_sign_info(self, uid) -> Union[SignInfo, int]:
         # server_id = RECOGNIZE_SERVER.get(str(uid)[0])
-        # is_os = self.check_os(uid)
-        is_os = False
+        is_os = self.check_os(uid)
         if is_os:
             # TODO
             params = {
-                'act_id': 'e202304121516551',
+                'act_id': 'e202303301540311',
                 'lang': 'zh-cn',
-                'region': 'prod_gf_cn',
-                'uid': uid,
             }
-            header = {
-                'DS': generate_os_ds(),
-            }
+            HEADER = copy.deepcopy(self._HEADER_OS)
+            HEADER['Cookie'] = await self.get_ck(uid, 'OWNER')
+            HEADER['DS'] = generate_os_ds()
+            header=HEADER
         else:
             params = {
                 'act_id': 'e202304121516551',
@@ -227,7 +228,19 @@ class MysApi(_MysApi):
                 },
             )
         else:
-            data = -99
+            HEADER = copy.deepcopy(self._HEADER_OS)
+            HEADER['Cookie'] = ck
+            HEADER['DS'] = generate_os_ds()
+            HEADER.update(header)
+            data = await self._mys_request(
+                url=_API['STAR_RAIL_SIGN_URL_OS'],
+                method='POST',
+                header=HEADER,
+                data={
+                    'act_id': 'e202303301540311',
+                    'lang': 'zh-cn',
+                },
+            )
         if isinstance(data, Dict):
             data = cast(MysSign, data['data'])
         return data

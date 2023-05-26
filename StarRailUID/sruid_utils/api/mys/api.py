@@ -1,12 +1,16 @@
 # flake8: noqa
 OLD_URL = "https://api-takumi.mihoyo.com"
 NEW_URL = 'https://api-takumi-record.mihoyo.com'
+OS_URL = "https://sg-public-api.hoyolab.com"
 
 STAR_RAIL_SIGN_INFO_URL = f'{OLD_URL}/event/luna/info'
+STAR_RAIL_SIGN_INFO_URL_OS = f'{OS_URL}/event/luna/os/info'
 STAR_RAIL_SIGN_LIST_URL = f'{OLD_URL}/event/luna/home'
+STAR_RAIL_SIGN_LIST_URL_OS = f'{OS_URL}/event/luna/os/home'
 STAR_RAIL_SIGN_EXTRA_INFO_URL = f'{OLD_URL}/event/luna/extra_info'
 STAR_RAIL_SIGN_EXTRA_REWARD_URL = f'{OLD_URL}/event/luna/extra_reward'
 STAR_RAIL_SIGN_URL = f'{OLD_URL}/event/luna/sign'
+STAR_RAIL_SIGN_URL_OS = f'{OS_URL}/event/luna/os/sign'
 STAR_RAIL_MONTH_INFO_URL = f'{OLD_URL}/event/srledger/month_info'  # 开拓阅历接口
 STAR_RAIL_MONTH_DETAIL_URL = (
     f'{OLD_URL}/event/srledger/month_detail'  # 开拓阅历详情接口
