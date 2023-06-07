@@ -20,16 +20,16 @@ STAR_RAIL_MONTH_DETAIL_URL = (
 STAR_RAIL_NOTE_URL = f'{NEW_URL}/game_record/app/hkrpg/api/note'  # 实时便签接口
 STAR_RAIL_NOTE_URL_OS = f'{OS_INFO_URL}/game_record/hkrpg/api/note'  # OS实时便签接口
 STAR_RAIL_INDEX_URL = f'{NEW_URL}/game_record/app/hkrpg/api/index'  # 角色橱窗接口
-STAR_RAIL_INDEX_URL_OS = f'{OS_INFO_URL}/game_record/hkrpg/api/index'  # OS角色橱窗接口
+STAR_RAIL_INDEX_URL_OS = (
+    f'{OS_INFO_URL}/game_record/hkrpg/api/index'  # OS角色橱窗接口
+)
 STAR_RAIL_AVATAR_BASIC_URL = (
     f'{NEW_URL}/game_record/app/hkrpg/api/avatar/basic'  # 全部角色接口
 )
 STAR_RAIL_ROLE_BASIC_INFO_URL = (
     f'{NEW_URL}/game_record/app/hkrpg/api/role/basicInfo'  # 角色基础信息接口
 )
-STAR_RAIL_ROLE_BASIC_INFO_URL_OS = (
-    f'{OS_INFO_URL}/game_record/hkrpg/api/index'
-)
+STAR_RAIL_ROLE_BASIC_INFO_URL_OS = f'{OS_INFO_URL}/game_record/hkrpg/api/index'
 STAR_RAIL_AVATAR_INFO_URL = (
     f'{NEW_URL}/game_record/app/hkrpg/api/avatar/info'  # 角色详细信息接口
 )
