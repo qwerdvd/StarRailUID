@@ -174,7 +174,7 @@ async def draw_resin_img(sr_uid: str) -> Image.Image:
     try:
         nickname = role_basic_info['nickname']
         level = role_basic_info['level']
-    except:
+    except Exception as e:
         nickname = "开拓者"
         level = "0"
 
