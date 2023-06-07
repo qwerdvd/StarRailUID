@@ -2,6 +2,7 @@
 OLD_URL = "https://api-takumi.mihoyo.com"
 NEW_URL = 'https://api-takumi-record.mihoyo.com'
 OS_URL = "https://sg-public-api.hoyolab.com"
+OS_INFO_URL = "https://bbs-api-os.hoyolab.com"
 
 STAR_RAIL_SIGN_INFO_URL = f'{OLD_URL}/event/luna/info'
 STAR_RAIL_SIGN_INFO_URL_OS = f'{OS_URL}/event/luna/os/info'
@@ -17,22 +18,32 @@ STAR_RAIL_MONTH_DETAIL_URL = (
 )
 
 STAR_RAIL_NOTE_URL = f'{NEW_URL}/game_record/app/hkrpg/api/note'  # 实时便签接口
+STAR_RAIL_NOTE_URL_OS = f'{OS_INFO_URL}/game_record/hkrpg/api/note'  # OS实时便签接口
 STAR_RAIL_INDEX_URL = f'{NEW_URL}/game_record/app/hkrpg/api/index'  # 角色橱窗接口
+STAR_RAIL_INDEX_URL_OS = f'{OS_INFO_URL}/game_record/hkrpg/api/index'  # OS角色橱窗接口
 STAR_RAIL_AVATAR_BASIC_URL = (
     f'{NEW_URL}/game_record/app/hkrpg/api/avatar/basic'  # 全部角色接口
 )
 STAR_RAIL_ROLE_BASIC_INFO_URL = (
     f'{NEW_URL}/game_record/app/hkrpg/api/role/basicInfo'  # 角色基础信息接口
 )
+STAR_RAIL_ROLE_BASIC_INFO_URL_OS = (
+    f'{OS_INFO_URL}/game_record/hkrpg/api/index'
+)
 STAR_RAIL_AVATAR_INFO_URL = (
     f'{NEW_URL}/game_record/app/hkrpg/api/avatar/info'  # 角色详细信息接口
 )
+STAR_RAIL_AVATAR_INFO_URL_OS = (
+    f'{OS_INFO_URL}/game_record/hkrpg/api/avatar/info'  # OS角色详细信息接口
+)
 
 CHALLENGE_INFO_URL = f'{NEW_URL}/game_record/app/hkrpg/api/challenge'
+CHALLENGE_INFO_URL_OS = f'{OS_INFO_URL}/game_record/hkrpg/api/challenge'
 
 STAR_RAIL_GACHA_LOG_URL = f'{OLD_URL}/common/gacha_record/api/getGachaLog'
 
 GET_FP_URL = 'https://public-data-api.mihoyo.com/device-fp/api/getFp'
+GET_FP_URL_OS = 'https://sg-public-data-api.hoyoverse.com/device-fp/api/getFp'
 # CREATE_QRCODE = f'{OLD_URL}/event/bbs_sign_reward/gen_auth_code'
 
 _API = locals()

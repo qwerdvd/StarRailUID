@@ -201,7 +201,10 @@ async def draw_role_card(sr_uid: str) -> Union[bytes, str]:
     if isinstance(role_index, int):
         return get_error(role_index)
     if isinstance(role_basic_info, int):
-        return get_error(role_basic_info)
+        role_basic_info = {}
+        role_basic_info['nickname'] = "开拓者"
+        role_basic_info['level'] = 0
+        #return get_error(role_basic_info)
 
     stats = role_index['stats']
     avatars = role_index['avatar_list']

@@ -171,8 +171,12 @@ async def draw_resin_img(sr_uid: str) -> Image.Image:
 
     # nickname and level
     role_basic_info = await mys_api.get_role_basic_info(sr_uid)
-    nickname = role_basic_info['nickname']
-    level = role_basic_info['level']
+    try:
+        nickname = role_basic_info['nickname']
+        level = role_basic_info['level']
+    except:
+        nickname = "开拓者"
+        level = "0"
 
     # 开拓力
     stamina = daily_data['current_stamina']

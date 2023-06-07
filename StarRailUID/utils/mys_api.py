@@ -59,17 +59,49 @@ class MysApi(_MysApi):
         return data
 
     async def get_daily_data(self, uid: str) -> Union[DailyNoteData, int]:
-        data = await self.simple_mys_req(
-            'STAR_RAIL_NOTE_URL', uid, header=self._HEADER
-        )
+        is_os = self.check_os(uid)
+        if is_os:
+            HEADER = copy.deepcopy(self._HEADER_OS)
+            HEADER['Cookie'] = await self.get_ck(uid, 'OWNER')
+            HEADER['DS'] = generate_os_ds()
+            header = HEADER
+            data = await self.simple_mys_req(
+                'STAR_RAIL_NOTE_URL',
+                uid,
+                params={
+                    'role_id': uid,
+                    'server': RECOGNIZE_SERVER.get(str(uid)[0], 'prod_gf_cn'),
+                },
+                header=header,
+            )
+        else:
+            data = await self.simple_mys_req(
+                'STAR_RAIL_NOTE_URL', uid, header=self._HEADER
+            )
         if isinstance(data, Dict):
             data = cast(DailyNoteData, data['data'])
         return data
 
     async def get_role_index(self, uid: str) -> Union[RoleIndex, int]:
-        data = await self.simple_mys_req(
-            'STAR_RAIL_INDEX_URL', uid, header=self._HEADER
-        )
+        is_os = self.check_os(uid)
+        if is_os:
+            HEADER = copy.deepcopy(self._HEADER_OS)
+            HEADER['Cookie'] = await self.get_ck(uid, 'OWNER')
+            HEADER['DS'] = generate_os_ds()
+            header = HEADER
+            data = await self.simple_mys_req(
+                'STAR_RAIL_INDEX_URL',
+                uid,
+                params={
+                    'role_id': uid,
+                    'server': RECOGNIZE_SERVER.get(str(uid)[0], 'prod_gf_cn'),
+                },
+                header=header,
+            )
+        else:
+            data = await self.simple_mys_req(
+                'STAR_RAIL_INDEX_URL', uid, header=self._HEADER
+            )
         if isinstance(data, Dict):
             data = cast(RoleIndex, data['data'])
         return data
@@ -113,17 +145,34 @@ class MysApi(_MysApi):
     async def get_avatar_info(
         self, uid: str, avatar_id: int, need_wiki: bool = False
     ) -> Union[AvatarInfo, int]:
-        data = await self.simple_mys_req(
-            'STAR_RAIL_AVATAR_INFO_URL',
-            uid,
-            params={
-                'id': avatar_id,
-                'need_wiki': 'true' if need_wiki else 'false',
-                'role_id': uid,
-                'server': RECOGNIZE_SERVER.get(str(uid)[0], 'prod_gf_cn'),
-            },
-            header=self._HEADER,
-        )
+        is_os = self.check_os(uid)
+        if is_os:
+            HEADER = copy.deepcopy(self._HEADER_OS)
+            HEADER['Cookie'] = await self.get_ck(uid, 'OWNER')
+            HEADER['DS'] = generate_os_ds()
+            header = HEADER
+            data = await self.simple_mys_req(
+                'STAR_RAIL_AVATAR_INFO_URL',
+                uid,
+                params={
+                    'need_wiki': 'true' if need_wiki else 'false',
+                    'role_id': uid,
+                    'server': RECOGNIZE_SERVER.get(str(uid)[0], 'prod_gf_cn'),
+                },
+                header=header,
+            )
+        else:
+            data = await self.simple_mys_req(
+                'STAR_RAIL_AVATAR_INFO_URL',
+                uid,
+                params={
+                    'id': avatar_id,
+                    'need_wiki': 'true' if need_wiki else 'false',
+                    'role_id': uid,
+                    'server': RECOGNIZE_SERVER.get(str(uid)[0], 'prod_gf_cn'),
+                },
+                header=self._HEADER,
+            )
         if isinstance(data, Dict):
             data = cast(AvatarInfo, data['data'])
         return data
@@ -183,19 +232,37 @@ class MysApi(_MysApi):
         ck: Optional[str] = None,
     ) -> Union[AbyssData, int]:
         server_id = self.RECOGNIZE_SERVER.get(uid[0])
-        data = await self.simple_mys_req(
-            'CHALLENGE_INFO_URL',
-            uid,
-            params={
-                'isPrev': 'true',
-                'need_all': 'true',
-                'role_id': uid,
-                'schedule_type': schedule_type,
-                'server': server_id,
-            },
-            cookie=ck,
-            header=self._HEADER,
-        )
+        is_os = self.check_os(uid)
+        if is_os:
+            HEADER = copy.deepcopy(self._HEADER_OS)
+            HEADER['Cookie'] = await self.get_ck(uid, 'OWNER')
+            HEADER['DS'] = generate_os_ds()
+            header = HEADER
+            data = await self.simple_mys_req(
+                'CHALLENGE_INFO_URL',
+                uid,
+                params={
+                    'need_all': 'true',
+                    'role_id': uid,
+                    'schedule_type': schedule_type,
+                    'server': server_id,
+                },
+                header=header,
+            )
+        else:
+            data = await self.simple_mys_req(
+                'CHALLENGE_INFO_URL',
+                uid,
+                params={
+                    'isPrev': 'true',
+                    'need_all': 'true',
+                    'role_id': uid,
+                    'schedule_type': schedule_type,
+                    'server': server_id,
+                },
+                cookie=ck,
+                header=self._HEADER,
+            )
         # print(data)
         if isinstance(data, Dict):
             data = cast(AbyssData, data['data'])
