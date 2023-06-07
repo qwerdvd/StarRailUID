@@ -170,11 +170,12 @@ async def draw_resin_img(sr_uid: str) -> Image.Image:
         return img
 
     # nickname and level
-    role_basic_info = await mys_api.get_role_basic_info(sr_uid)
-    try:
+    # deal with hoyolab with no nickname and level api
+    if int(str(sr_uid)[0]) < 6:
+        role_basic_info = await mys_api.get_role_basic_info(sr_uid)
         nickname = role_basic_info['nickname']
         level = role_basic_info['level']
-    except Exception as e:
+    else:
         nickname = "开拓者"
         level = "0"
 
