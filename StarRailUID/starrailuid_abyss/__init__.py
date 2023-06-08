@@ -29,7 +29,7 @@ async def send_srabyss_info(bot: Bot, ev: Event):
         return
 
     await bot.logger.info('开始执行[sr查询深渊信息]')
-    uid = await get_uid(bot, ev)
+    uid, user_id = await get_uid(bot, ev, True)
     if uid is None:
         return await bot.send(UID_HINT)
     await bot.logger.info('[sr查询深渊信息]uid: {}'.format(uid))
@@ -64,5 +64,5 @@ async def send_srabyss_info(bot: Bot, ev: Event):
     # data = GsCookie()
     # raw_abyss_data = await data.get_spiral_abyss_data(uid, schedule_type)
     # print(raw_abyss_data)
-    im = await draw_abyss_img(ev.user_id, uid, floor, schedule_type)
+    im = await draw_abyss_img(user_id, uid, floor, schedule_type)
     await bot.send(im)

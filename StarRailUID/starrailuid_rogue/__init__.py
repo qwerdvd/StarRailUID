@@ -32,7 +32,7 @@ async def send_srabyss_info(bot: Bot, ev: Event):
         return
 
     await bot.logger.info('开始执行[sr查询模拟宇宙信息]')
-    uid = await get_uid(bot, ev)
+    uid, user_id = await get_uid(bot, ev, True)
     if uid is None:
         return await bot.send(UID_HINT)
     await bot.logger.info('[sr查询模拟宇宙信息]uid: {}'.format(uid))
@@ -63,5 +63,5 @@ async def send_srabyss_info(bot: Bot, ev: Event):
     # data = GsCookie()
     # raw_rogue_data = await data.get_rogue_data(uid, schedule_type)
     # print(raw_rogue_data)
-    im = await draw_rogue_img(ev.user_id, uid, floor, schedule_type)
+    im = await draw_rogue_img(user_id, uid, floor, schedule_type)
     await bot.send(im)
