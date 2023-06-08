@@ -108,6 +108,7 @@ class MysApi(_MysApi):
 
     async def get_gacha_log_by_link_in_authkey(
         self,
+        uid: str,
         authkey: str,
         gacha_type: str = '11',
         page: int = 1,
@@ -115,11 +116,22 @@ class MysApi(_MysApi):
     ) -> Union[int, GachaLog]:
         # server_id = 'cn_qd01' if
         # uid[0] == '5' else 'cn_gf01'
-        server_id = 'prod_gf_cn'
+        server_id = RECOGNIZE_SERVER.get(str(uid)[0])
+        if self.check_os(uid):
+            HEADER = copy.deepcopy(self._HEADER_OS)
+            HEADER['Cookie'] = await self.get_ck(uid, 'OWNER')
+            HEADER['DS'] = generate_os_ds()
+            header = HEADER
+            url = self.MAPI['STAR_RAIL_GACHA_LOG_URL_OS']
+            game_biz = 'hkrpg_global'
+        else:
+            header = self._HEADER
+            url = self.MAPI['STAR_RAIL_GACHA_LOG_URL']
+            game_biz = 'hkrpg_cn'
         data = await self._mys_request(
-            url=self.MAPI['STAR_RAIL_GACHA_LOG_URL'],
+            url=url,
             method='GET',
-            header=self._HEADER,
+            header=header,
             params={
                 'authkey_ver': '1',
                 'sign_type': '2',
@@ -131,7 +143,7 @@ class MysApi(_MysApi):
                 'plat_type': 'pc',
                 'region': server_id,
                 'authkey': authkey,
-                'game_biz': 'hkrpg_cn',
+                'game_biz': game_biz,
                 'gacha_type': gacha_type,
                 'page': page,
                 'size': '20',

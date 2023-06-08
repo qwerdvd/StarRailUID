@@ -195,16 +195,19 @@ async def _draw_card_2(
 
 
 async def draw_role_card(sr_uid: str) -> Union[bytes, str]:
-    role_basic_info = await mys_api.get_role_basic_info(sr_uid)
     role_index = await mys_api.get_role_index(sr_uid)
-
-    if isinstance(role_index, int):
-        return get_error(role_index)
-    if isinstance(role_basic_info, int):
+    # deal with hoyolab with no nickname and level api
+    if int(str(sr_uid)[0]) < 6:
+        role_basic_info = await mys_api.get_role_basic_info(sr_uid)
+        if isinstance(role_basic_info, int):
+            return get_error(role_basic_info)
+    else:
         role_basic_info = {}
         role_basic_info['nickname'] = "开拓者"
         role_basic_info['level'] = 0
-        # return get_error(role_basic_info)
+
+    if isinstance(role_index, int):
+        return get_error(role_index)
 
     stats = role_index['stats']
     avatars = role_index['avatar_list']

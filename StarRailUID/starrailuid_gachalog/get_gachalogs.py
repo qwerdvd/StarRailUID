@@ -16,7 +16,7 @@ gacha_type_meta_data = {
 
 
 async def get_new_gachalog_by_link(
-    gacha_url: str, full_data: Dict, is_force: bool
+    uid: str, gacha_url: str, full_data: Dict, is_force: bool
 ):
     temp = []
     for gacha_name in gacha_type_meta_data:
@@ -29,7 +29,7 @@ async def get_new_gachalog_by_link(
                     return {}
                 authkey = url_parse['authkey'][0]
                 data = await mys_api.get_gacha_log_by_link_in_authkey(
-                    authkey, gacha_type, page, end_id
+                    uid, authkey, gacha_type, page, end_id
                 )
                 await asyncio.sleep(0.45)
                 if isinstance(data, int):
@@ -105,7 +105,7 @@ async def save_gachalogs(
     # 获取新抽卡记录
     if raw_data is None:
         raw_data = await get_new_gachalog_by_link(
-            gacha_url, gachalogs_history, is_force
+            uid, gacha_url, gachalogs_history, is_force
         )
     else:
         new_data = {'始发跃迁': [], '群星跃迁': [], '角色跃迁': [], '光锥跃迁': []}
