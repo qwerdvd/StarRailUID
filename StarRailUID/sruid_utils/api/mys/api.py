@@ -42,7 +42,9 @@ CHALLENGE_INFO_URL = f'{NEW_URL}/game_record/app/hkrpg/api/challenge'
 CHALLENGE_INFO_URL_OS = f'{OS_INFO_URL}/game_record/hkrpg/api/challenge'
 
 STAR_RAIL_GACHA_LOG_URL = f'{OLD_URL}/common/gacha_record/api/getGachaLog'
-STAR_RAIL_GACHA_LOG_URL_OS = f'{OS_OLD_URL}/common/gacha_record/api/getGachaLog'
+STAR_RAIL_GACHA_LOG_URL_OS = (
+    f'{OS_OLD_URL}/common/gacha_record/api/getGachaLog'
+)
 
 GET_FP_URL = 'https://public-data-api.mihoyo.com/device-fp/api/getFp'
 GET_FP_URL_OS = 'https://sg-public-data-api.hoyoverse.com/device-fp/api/getFp'
