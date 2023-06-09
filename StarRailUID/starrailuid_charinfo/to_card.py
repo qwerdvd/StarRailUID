@@ -11,6 +11,7 @@ from ..utils.fonts.first_world import fw_font_28
 from ..utils.fonts.starrail_fonts import sr_font_24, sr_font_30, sr_font_58
 from ..utils.resource.RESOURCE_PATH import CHAR_ICON_PATH, CHAR_PREVIEW_PATH
 from ..utils.map.name_covert import name_to_avatar_id, avatar_id_to_char_star
+from ..utils.map.SR_MAP_PATH import avatarId2Name
 
 half_color = (255, 255, 255, 120)
 first_color = (29, 29, 29)
@@ -49,12 +50,13 @@ async def draw_enka_card(
     uid: str, char_list: Optional[List] = None, showfrom: int = 0
 ):
     char_data_list = []
-    if '希儿' in char_list:
-        char_list.remove('希儿')
-        char_list.append('希儿')
+    if 1102 in char_list:
+        char_list.remove(1102)
+        char_list.append(1102)
     for char in char_list:
+        avatarName = avatarId2Name[str(char)]
         char_data_list.append(
-            {'avatarName': char, 'avatarId': await name_to_avatar_id(char)}
+            {'avatarName': avatarName, 'avatarId': str(char)}
         )
     if showfrom == 0:
         line1 = f'展柜内有 {len(char_data_list)} 个角色!'

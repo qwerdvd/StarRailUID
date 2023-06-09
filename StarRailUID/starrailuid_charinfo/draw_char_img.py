@@ -17,6 +17,7 @@ from ..utils.fonts.first_world import fw_font_28
 from ..utils.map.SR_MAP_PATH import RelicId2Rarity
 from ..utils.excel.read_excel import light_cone_ranks
 from ..utils.map.name_covert import name_to_avatar_id, alias_to_char_name
+from ..utils.map.SR_MAP_PATH import avatarId2Name
 from ..utils.resource.RESOURCE_PATH import (
     RELIC_PATH,
     SKILL_PATH,
@@ -571,9 +572,15 @@ async def get_char_data(
     elif enable_self and char_self_path.exists():
         path = char_self_path
     else:
-        im = await api_to_dict(sr_uid)
-        print(str(im))
-        if str(char_name) in im:
+        char_data_list = await api_to_dict(sr_uid)
+        charname_list = []
+        if isinstance(char_data_list, str):
+            return char_data_list
+        else:
+            for char in char_data_list:
+                charname = avatarId2Name[str(char)]
+                charname_list.append(charname)
+        if str(char_name) in charname_list:
             if char_path.exists():
                 path = char_path
             elif enable_self and char_self_path.exists():

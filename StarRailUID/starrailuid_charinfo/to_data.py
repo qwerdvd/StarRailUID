@@ -106,7 +106,7 @@ async def api_to_dict(
         im = f'UID: {sr_uid} 的角色展柜刷新失败！\n请检查UID是否正确或者角色展柜是否打开！'
         return im
 
-    return char_name_list
+    return char_id_list
 
 
 async def get_data(char: dict, sr_data: dict, sr_uid: str):
