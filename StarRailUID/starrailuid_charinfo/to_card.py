@@ -8,10 +8,10 @@ from gsuid_core.utils.api.enka.models import EnkaData
 from .to_data import api_to_dict
 from ..utils.image.convert import convert_img
 from ..utils.fonts.first_world import fw_font_28
+from ..utils.map.SR_MAP_PATH import avatarId2Name
 from ..utils.fonts.starrail_fonts import sr_font_24, sr_font_30, sr_font_58
 from ..utils.resource.RESOURCE_PATH import CHAR_ICON_PATH, CHAR_PREVIEW_PATH
 from ..utils.map.name_covert import name_to_avatar_id, avatar_id_to_char_star
-from ..utils.map.SR_MAP_PATH import avatarId2Name
 
 half_color = (255, 255, 255, 120)
 first_color = (29, 29, 29)
