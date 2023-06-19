@@ -121,6 +121,7 @@ class RogueData(TypedDict):
     role: RoleInfo
     basic_info: RogueBasicInfo
     current_record: RogueRecord
+    last_record: RogueRecord
 
 
 ################

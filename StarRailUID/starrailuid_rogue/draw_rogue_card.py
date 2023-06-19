@@ -195,7 +195,7 @@ async def draw_rogue_img(
     qid: Union[str, int],
     uid: str,
     floor: Optional[int] = None,
-    schedule_type: str = '1',
+    schedule_type: str = '3',
 ) -> Union[bytes, str]:
     # 获取Cookies
     data = GsCookie()
@@ -203,7 +203,7 @@ async def draw_rogue_img(
     # if retcode:
     # return retcode
     # raw_data = data.raw_data
-    raw_rogue_data = await data.get_rogue_data(uid, schedule_type)
+    raw_rogue_data = await data.get_rogue_data(uid, '3')
     # print(raw_rogue_data)
 
     if isinstance(raw_rogue_data, int):
@@ -217,7 +217,10 @@ async def draw_rogue_img(
     # char_temp = {}
 
     # 计算背景图尺寸
-    rogue_detail = raw_rogue_data['current_record']['records']
+    if schedule_type == '3':
+        rogue_detail = raw_rogue_data['current_record']['records']
+    else:
+        rogue_detail = raw_rogue_data['last_record']['records']
 
     # 记录打的宇宙列表
     detail_list = []
